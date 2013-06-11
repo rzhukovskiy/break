@@ -168,6 +168,9 @@
             }
             switch($step['condition_type']) {
                 case 'step':
+                    if($this->getUserStepByUserIdAndStepId($userId, $step['condition_value'])->getData()) {
+                        return true;
+                    }
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);
@@ -177,5 +180,7 @@
                     $user = $user->getData();
                     return $user[$step['condition_type']] == $step['condition_value'];
             }
+
+            return false;
         }
     }

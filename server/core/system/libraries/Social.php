@@ -18,7 +18,7 @@
 
             switch ($this->_platform) {
                 case 'vk':
-                    $this->_platformClass = new Vkapi($this->_globals->getParam('vk'));
+                    $this->_platformClass = new Vkapi($this->_globals->getParam('vk'), $this->getUserId());
                 break;
             }
         }
@@ -43,10 +43,12 @@
          * @return int|string
          */
         public function getUserId() {
-            switch ($this->_platform) {
-                case 'vk':
-                    $this->_userId = $this->vkUserId();
-                    break;
+            if(!$this->_userId) {
+                switch ($this->_platform) {
+                    case 'vk':
+                        $this->_userId = $this->vkUserId();
+                        break;
+                }
             }
             return $this->_userId;
         }
@@ -57,28 +59,11 @@
          */
         public function getProfile() {
             switch ($this->_platform) {
-                case 'facebook':
-                    if(!$this->_userId) {
+                case 'vk':
+                    if(!$this->getUserId()) {
                         return false;
                     } else {
-                        return $this->_platformClass->api('/me');
-                    }
-                    break;
-            }
-        }
-
-        /**
-         * Информация о запросе
-         * @param int $requestId
-         * @return array|bool
-         */
-        public function getRequestInfo($requestId) {
-            switch ($this->_platform) {
-                case 'facebook':
-                    if(!$this->_userId) {
-                        return false;
-                    } else {
-                        return $this->_platformClass->api($requestId);
+                        return $this->_platformClass->api('user.get');
                     }
                     break;
             }
@@ -90,52 +75,13 @@
          */
         public function getFriendList() {
             switch ($this->_platform) {
-                case 'facebook':
-                    if(!$this->_userId) {
+                case 'vk':
+                    if(!$this->getUserId()) {
                         return false;
                     } else {
-                        $_friendList = $this->_platformClass->api('/me/friends?fields=id,name,installed');
-                        $_friendList = $_friendList['data'];
-                        $friendList = array();
-                        foreach($_friendList as $friend) {
-                            $friendList[] = $friend;
-                        }
+                        $friendList = $this->_platformClass->api('friends.getAppUsers');
+                        $friendList = $friendList['response'];
                         return $friendList;
-                    }
-                    break;
-            }
-        }
-        
-
-		/**
-         * @param $params array
-		 * @return string
-		 */
-		public function getAuthUrl($params = array()) {
-			switch ($this->_platform) {
-				case 'facebook':
-					if(!$this->getUserId()) {
-						return $this->_platformClass->getLoginUrl($params);
-					} else {
-						return $this->_platformClass->getLogoutUrl(array('next' => 'http://bubble.battlekeys.com/server/index.php/index/logout'));
-					}
-					break;
-			}
-		}
-
-
-        /**
-         * @param $userId int
-         * @param $requestId int
-         * @return bool
-         */
-        public function deleteRequest($requestId, $userId) {
-            switch ($this->_platform) {
-                case 'facebook':
-                    try {
-                        return $this->_platformClass->api("/{$requestId}_{$userId}",'DELETE');
-                    } catch(Exception $ex) {
-                        return false;
                     }
                     break;
             }

@@ -3,12 +3,10 @@
     $config['platform']       = 'facebook';
     $config['xml_path']       = '../client/assets/config/data';
 
-    $config['facebook'] = array (
-        'appId'       => '182767508538747',
-        'secret'      => '8514dfdd7223da3ec0bd70a0bbbe4c93',
-        'namespace'   => 'bubbles-test',
-        'cookie'      => true,
-        'scope'       => 'email,publish_stream'
+    $config['vk'] = array (
+        'app_id'      => '3704573',
+        'api_secret'  => 'XTfwoirKlBF0DIWVjlaQ',
+        'api_url'     => 'api.vk.com/api.php'
     );
 
     $config['internal_key']             = 'wfp4eo34';
@@ -17,9 +15,9 @@
     $config['test_mode_user']           = 1;
 
     $db = array(
-        'user'      => 'axel_bubble',
-        'password'  => 'LwTdew1spvedHSGcScJg',
+        'user'      => 'root',
+        'password'  => 'sqladm',
         'host'      => 'localhost',
-        'db_name'   => 'axel_bubbles',
+        'db_name'   => 'break',
         'driver'    => 'mysql',
     );

@@ -2,10 +2,12 @@
     class Vkapi {
         private $_apiSecret;
         private $_appId;
+        private $_userId;
         private $_apiUrl;
 
-        function Vkapi($params) {
+        function Vkapi($params, $userId) {
             $this->_appId = $params['app_id'];
+            $this->_userId = $userId;
             $this->_apiSecret = $params['api_secret'];
             if (!strstr($params['api_url'], 'http://')) {
                 $params['api_url'] = 'http://'.$params['api_url'];
@@ -13,9 +15,15 @@
             $this->_apiUrl = $params['api_url'];
         }
 
-        public function api($method,$params = false) {
-            if (!$params) $params = array();
+        public function api($method,$params = false, $userId = false) {
+            if(!$userId) {
+                $userId = $this->_userId;
+            }
+            if (!$params) {
+                $params = array();
+            }
             $params['api_id'] = $this->_appId;
+            $params['uid'] = $userId;
             $params['v'] = '3.0';
             $params['method'] = $method;
             $params['timestamp'] = time();
