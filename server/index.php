@@ -20,7 +20,7 @@ Autoloader::registerPath('core/controllers/system');
 Autoloader::registerPath('core/system/libraries');
 Autoloader::registerPath('core/system/libraries/vk');
 
-set_error_handler('exceptionHandler');
+set_error_handler(array('Error', 'exceptionHandler'));
 
 $GB = Globals::init();
 

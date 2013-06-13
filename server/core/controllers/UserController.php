@@ -31,8 +31,8 @@
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
                 'user_request_from_list'    => RequestModel::getInstance()->getRequestListByUserFromId($this->getUserId())->getData(), //запросы
                 'user_request_to_list'      => RequestModel::getInstance()->getRequestListByUserToId($this->getUserId())->getData(), //запросы
-                'user_friend_list'          => $this->_social->getFriendList(), //друзья
-                'user_info'                 => $this->_social->getProfile(), //профиль соц.сети
+                //'user_friend_list'          => $this->_social->getFriendList(), //друзья
+                //'user_info'                 => $this->_social->getProfile(), //профиль соц.сети
             ))->send();
         }
 

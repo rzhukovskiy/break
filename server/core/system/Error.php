@@ -21,14 +21,6 @@
         }
     }
 
-    function exceptionHandler($code, $message, $file, $line, $context) {
-        //for not handling notices
-        if ($code == E_STRICT)
-            return true;
-
-        throw new ErrorOrWarningException($code, $message, $file, $line, $context);
-    }
-
     class Error {
         private $http_code = 500;
         private $http_codes;
@@ -126,6 +118,14 @@
         public function setError($message, $http_code = 500, $code = E_USER_ERROR) {
             $this->http_code = $http_code;
             trigger_error($message, $code);
+        }
+
+        public static function exceptionHandler($code, $message, $file, $line, $context) {
+            //for not handling notices
+            if ($code == E_STRICT)
+                return true;
+
+            throw new ErrorOrWarningException($code, $message, $file, $line, $context);
         }
     }
 
