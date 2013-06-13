@@ -1,6 +1,6 @@
 <?php
     $config['error_handling'] = true;
-    $config['platform']       = 'facebook';
+    $config['platform']       = 'vk';
     $config['xml_path']       = '../client/assets/config/data';
 
     $config['vk'] = array (

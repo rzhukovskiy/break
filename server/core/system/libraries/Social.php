@@ -3,6 +3,8 @@
      * Фасад для работы с соцсетями
      */
     class Social {
+        /** @var Request */
+        protected $_request = null;
         /** @var int */
         private $_userId;
         /** @var string */
@@ -29,10 +31,10 @@
          */
         private function vkUserId() {
             $vkConfig = $this->_globals->getParam('vk');
-            if(isset($_REQUEST['access_token']) && isset($_REQUEST['uid']) && md5($vkConfig['app_id'] . '_' . $_REQUEST['uid'] . '_' . $vkConfig['vk']['api_secret']) == $_REQUEST['access_token']) {
-                $uid = $_REQUEST['uid'];
-            }
-            else {
+            $uid = $this->getRequest()->getParam('uid', false);
+            $authKey = $this->getRequest()->getParam('auth_key', false);
+
+            if(!$authKey || !$uid || md5($vkConfig['app_id'] . '_' . $uid . '_' . $vkConfig['api_secret']) != $authKey) {
                 $uid = false;
             }
             return $uid;
@@ -85,6 +87,18 @@
                     }
                     break;
             }
+        }
+
+        /**
+         * Получить параметры запроса
+         * @return Request
+         */
+        public function getRequest() {
+            if ($this->_request == null) {
+                $this->_request = new Request();
+            }
+
+            return $this->_request;
         }
     }
 

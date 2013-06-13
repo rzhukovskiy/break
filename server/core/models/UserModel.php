@@ -68,8 +68,7 @@
                   stamina      = LEAST(stamina + :stamina, stamina_max),
                   stamina_max  = stamina_max + :stamina_max,
                   energy_time  = energy_time + :energy_time,
-                  stamina_time = stamina_time + :stamina_time,
-                  modify_date  = CURRENT_TIMESTAMP
+                  stamina_time = stamina_time + :stamina_time
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
@@ -247,8 +246,7 @@
                   ' . $this->_table . '
                 SET
                   energy = energy + LEAST(TIMESTAMPDIFF(MINUTE, energy_date, CURRENT_TIMESTAMP) DIV  energy_time, energy_max - energy),
-                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(MINUTE, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time MINUTE),
-                  modify_date = CURRENT_TIMESTAMP
+                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(MINUTE, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time MINUTE)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
@@ -280,8 +278,7 @@
                   ' . $this->_table . '
                 SET
                   stamina = stamina + LEAST((TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - energy),
-                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time MINUTE),
-                  modify_date = CURRENT_TIMESTAMP
+                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time MINUTE)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
@@ -388,7 +385,7 @@
                     battles,
                     wins,
                     coins,
-                    modify_date,
+                    create_date,
                     award_date,
                     energy_date,
                     stamina_date,
@@ -421,7 +418,7 @@
                 ':energy'       => $settings['energy_max'],
                 ':energy_max'   => $settings['energy_max'],
                 ':stamina'      => $settings['stamina_max'],
-                ':stamina_max'  => $settings['energy_max'],
+                ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
                 ':energy_time'  => $settings['energy_time'],
                 ':stamina_time' => $settings['stamina_time']

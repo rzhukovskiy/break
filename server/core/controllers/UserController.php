@@ -42,7 +42,8 @@
         public function addAction() {
             $faceId = $this->getRequest()->getParam('face_id', 1);
             $hairId = $this->getRequest()->getParam('hair_id', 1);
-            UserModel::getInstance()->addUserByUserId($this->getUserId(), $faceId, $hairId);
+
+            UserModel::getInstance()->addUserByUserId($this->getUserId(), $faceId, $hairId)->send();
         }
 
         /**

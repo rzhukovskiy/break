@@ -3,7 +3,7 @@
      * Работа с таблицей request - запросы пользователей
      */
     class RequestModel extends BaseModel {
-        private $_table = 'request';
+        protected $_table = 'user';
 
         /**
          * Создать самого себя

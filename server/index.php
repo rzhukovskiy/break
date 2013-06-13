@@ -18,7 +18,7 @@ Autoloader::registerPath('core/models/system');
 Autoloader::registerPath('core/controllers');
 Autoloader::registerPath('core/controllers/system');
 Autoloader::registerPath('core/system/libraries');
-Autoloader::registerPath('core/system/libraries/facebook');
+Autoloader::registerPath('core/system/libraries/vk');
 
 set_error_handler('exceptionHandler');
 
