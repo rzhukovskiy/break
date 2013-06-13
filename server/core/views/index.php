@@ -10,37 +10,26 @@
         </script>
 
         <script type="text/javascript">
-            var app;
-            var flashvars;
-            var vk_id;
-            var auth_key;
+            var flashvars = new Array();
+            flashvars.viewer_id = <?php echo isset($_REQUEST['viewer_id']) ? isset($_REQUEST['viewer_id']) : 1 ?>;
+            flashvars.auth_key = <?php echo isset($_REQUEST['auth_key']) ? isset($_REQUEST['auth_key']) : 1 ?>;
+            flashvars.isLocal = "0";
+
+            var d = new Date();
+            flashvars.time = d.getTime();
+
+            var params = { menu: "false", wmode: "Opaque", scale: "noscale", allowFullscreen: "true", allowNetworking : "all", allowScriptAccess: "always", bgcolor: "#000000" };
+            var attributes = { id: "application", name: "application" };
+            swfobject.embedSWF(
+                    "http://zluki.com/break/client/Main.swf?"+Math.floor(Math.random()*65535),
+                    "altContent", "600", "500", "11.4.0",
+                    false,
+                    flashvars, params, attributes);
 
             VK.apiId = <?php echo $vk['app_id'] ?>;
 
             window.onload = (function() {
-                VK.init(function() {
-                    try {
-                        var flashvars = new Array();
-                        flashvars.viewer_id = <?php echo $_REQUEST['viewer_id'] ?>;
-                        flashvars.auth_key = <?php echo $_REQUEST['auth_key'] ?>;
-                        flashvars.isLocal = "0";
-
-                        var d = new Date();
-                        flashvars.time = d.getTime();
-
-                        var params = { menu: "false", wmode: "Opaque", scale: "noscale", allowFullscreen: "true", allowNetworking : "all", allowScriptAccess: "always", bgcolor: "#000000" };
-                        var attributes = { id: "application", name: "application" };
-                        swfobject.embedSWF("https://zluki.com/break/client/game.swf", "alt-content", "100%", '815px', "10.1.0", false, flashvars, params, attributes, function(e) {
-                            app = e.ref;
-                        });
-                    } catch (e) {
-                        txt = "There was an error on this page.\n\n";
-                        txt += "VK.init function\n\n";
-                        txt += "Error description: " + e + "\n\n";
-                        txt += "Click OK to continue.\n\n";
-                        console.log(txt);
-                    }
-                });
+                VK.init();
             });
         </script>
     </head>
@@ -59,8 +48,9 @@
         <a href="#" onclick="fb.placeOrder('currency', 'Coins', 'Cool coins', 33, '', 'coins')">Coins for credits</a>
     </div>
     <div id="altContent">
-        <h1>Breakdance</h1>
-        <p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+        <a href="http://www.adobe.com/go/getflashplayer">
+            <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+        </a>
     </div>
 </body>
 </html>
