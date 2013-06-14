@@ -11,8 +11,9 @@
 
         <script type="text/javascript">
             var flashvars = new Array();
-            flashvars.viewer_id = <?php echo isset($_REQUEST['viewer_id']) ? isset($_REQUEST['viewer_id']) : 1 ?>;
-            flashvars.auth_key = <?php echo isset($_REQUEST['auth_key']) ? isset($_REQUEST['auth_key']) : 1 ?>;
+            flashvars.uid = <?php echo $_REQUEST['viewer_id'] ?>;
+            flashvars.auth_key = '<?php echo $_REQUEST['auth_key'] ?>';
+            flashvars.user_info = <?php echo json_encode($_REQUEST['api_result']) ?> ;
             flashvars.isLocal = "0";
 
             var d = new Date();
@@ -22,7 +23,7 @@
             var attributes = { id: "application", name: "application" };
             swfobject.embedSWF(
                     "http://zluki.com/break/client/Main.swf?"+Math.floor(Math.random()*65535),
-                    "altContent", "600", "500", "11.4.0",
+                    "altContent", "790", "600", "11.4.0",
                     false,
                     flashvars, params, attributes);
 
@@ -39,13 +40,8 @@
         <a href="http://zluki.com/break/server/index.php/user/get?uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Get user</a> |
         <a href="http://zluki.com/break/server/index.php/user/add?hair_id=red&face_id=ugly&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Add user</a> |
         <a href="http://zluki.com/break/server/index.php/user/delete?uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Delete user</a> |
-        <a href="http://zluki.com/break/server/index.php/user/startMission" target="_blank">Start mission</a> |
-        <a href="http://zluki.com/break/server/index.php/user/progress?mission_id=loc1mis1&scores=31000" target="_blank">Save progress</a> |
-        <a href="#" onclick="fb.placeOrder('amulet', 'Amulet', 'Cool amulet', 30, '', 'accuracy')">Credits test</a> |
-        <a href="#" onclick="fb.writeWall('', 'Test note on the wall', 'This is just a test', 'Play the game!')">Write wall</a> |
-        <a href="#" onclick="fb.inviteFriends('Invite!', 'Come get some!', '581607783,636994392')">Invite friends</a> |
-        <a href="#" onclick="fb.sendRequestToRecipients('Help me!', '', '', 'location', 'loc1')">Send request</a> |
-        <a href="#" onclick="fb.placeOrder('currency', 'Coins', 'Cool coins', 33, '', 'coins')">Coins for credits</a>
+        <a href="http://zluki.com/break/server/index.php/user/learnStep?step_id=indian_step&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Raise step level</a> |
+        <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=green_hat&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a>
     </div>
     <div id="altContent">
         <a href="http://www.adobe.com/go/getflashplayer">

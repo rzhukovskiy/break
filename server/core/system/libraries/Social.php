@@ -72,24 +72,6 @@
         }
 
         /**
-         * Список друзей
-         * @return array|bool
-         */
-        public function getFriendList() {
-            switch ($this->_platform) {
-                case 'vk':
-                    if(!$this->getUserId()) {
-                        return false;
-                    } else {
-                        $friendList = $this->_platformClass->api('friends.getAppUsers');
-                        $friendList = $friendList['response'];
-                        return $friendList;
-                    }
-                    break;
-            }
-        }
-
-        /**
          * Получить параметры запроса
          * @return Request
          */

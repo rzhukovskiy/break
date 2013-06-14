@@ -168,7 +168,9 @@
             }
             switch($step['condition_type']) {
                 case 'step':
-                    if($this->getUserStepByUserIdAndStepId($userId, $step['condition_value'])->getData()) {
+                    list($stepId, $stepLevel) = explode(':', $step['condition_value']);
+                    $userStep = $this->getUserStepByUserIdAndStepId($userId, $stepId)->getData();
+                    if($userStep['level'] >= $stepLevel) {
                         return true;
                     }
                     break;
