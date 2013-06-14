@@ -3,7 +3,7 @@
      * работа с user_move таблицей. движения пользователей
      */
     class UserStepModel extends BaseModel {
-        protected $_table = 'user_move';
+        protected $_table = 'user_step';
 
         /**
          * Создать самого себя
@@ -46,7 +46,7 @@
         }
 
         /**
-         * Получить конкретный предмет у конкретного пользователя
+         * Получить конкретное движение у конкретного пользователя
          * @param int $userId
          * @param string $stepId
          * @return Response
@@ -103,7 +103,7 @@
             $userStep = $userStep->getData();
 
             if(!$this->_checkTrainConditions($userId, $step, $userStep)) {
-                $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
+                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
             $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
@@ -135,12 +135,11 @@
             $sql =
                'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, step_id, level, modify_date)
+                    (user_id, step_id, level, create_date)
                 VALUES
                     (:user_id, :step_id, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    level = level + 1,
-                    modify_date = CURRENT_TIMESTAMP';
+                    level = level + 1,';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
@@ -158,21 +157,22 @@
         /**
          * @param $userId
          * @param $step
-         * @param $userStep
+         * @param $conditionStep
          * @return bool
          */
-        private function _checkTrainConditions($userId, $step, $userStep)
+        private function _checkTrainConditions($userId, $step, $conditionStep)
         {
-            if($userStep) {
+            if($conditionStep) {
                 return true;
             }
             switch($step['condition_type']) {
                 case 'step':
                     list($stepId, $stepLevel) = explode(':', $step['condition_value']);
-                    $userStep = $this->getUserStepByUserIdAndStepId($userId, $stepId)->getData();
-                    if($userStep['level'] >= $stepLevel) {
-                        return true;
+                    $conditionStep = $this->getUserStepByUserIdAndStepId($userId, $stepId)->getData();
+                    if(!$conditionStep) {
+                        return false;
                     }
+                    return $conditionStep['level'] >= $stepLevel;
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);

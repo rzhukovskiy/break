@@ -25,7 +25,7 @@
             $response = new Response();
 
             $sql =
-               'SELECT
+                'SELECT
                     *
                 FROM
                     ' . $this->_table . '
@@ -46,7 +46,42 @@
         }
 
         /**
-         * Купить пользователю указанный амулет
+         * Получить конкретный предмет у конкретного пользователя
+         * @param int $userId
+         * @param string $itemId
+         * @return Response
+         */
+        public function getUserItemByUserIdAndItemId($userId, $itemId) {
+            /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
+            $response = new Response();
+
+            $sql =
+                'SELECT
+                    *
+                FROM
+                    ' . $this->_table . '
+                WHERE
+                    user_id = :user_id AND
+                    step_id = :step_id
+                LIMIT 1';
+            $query = $dataDb->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId,
+                ':step_id' => $itemId,
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetch(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Купить предмет
          * @param int $userId
          * @param string $itemId
          * @return Response
@@ -62,56 +97,25 @@
             $item = $item->getData();
 
             if(!$this->_checkItemConditions($userId, $item)) {
-                $response->setCode(Response::CODE_ERROR)->setError('Condition exception');
+                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
-            $response = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'coins'  => -1 * $item['coins'],
+            $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
+                'coins'  => -1 * $item['coins']
             ));
-            if($response->isError()) {
-                return $response;
+            if($awardResult->isError()) {
+                return $awardResult;
             }
 
-            return $this->addUserItem($userId, $itemId);
+            $raiseResult = $this->addUserItem($userId, $itemId);
+            if($raiseResult->isError()) {
+                return $raiseResult;
+            }
+            return $awardResult;
         }
 
         /**
-         * Получить конкретный предмет у конкретного пользователя
-         * @param int $userId
-         * @param string $itemId
-         * @return Response
-         */
-        public function getUserItemByUserIdAndItemId($userId, $itemId) {
-            /** @var $dataDb PDO */
-            $dataDb = $this->getDataBase();
-            $response = new Response();
-
-            $sql =
-               'SELECT
-                    *
-                FROM
-                    ' . $this->_table . '
-                WHERE
-                    user_id = :user_id AND
-                    item_id = :item_id
-                LIMIT 1';
-            $query = $dataDb->prepare($sql);
-            $query->execute(array(
-                ':user_id' => $userId,
-                ':item_id' => $itemId,
-            ));
-
-            $err = $query->errorInfo();
-            if($err[1] != null){
-                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
-            } else {
-                $response->setData($query->fetch(PDO::FETCH_ASSOC));
-            }
-            return $response;
-        }
-
-        /**
-         * Добавить пользователю указанный предмет
+         * Добавить предмет
          * @param int $userId
          * @param string $itemId
          * @return Response
@@ -122,14 +126,13 @@
             $response = new Response();
 
             $sql =
-               'INSERT INTO
+                'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, item_id, amount, modify_date)
+                    (user_id, item_id, amount, create_date)
                 VALUES
                     (:user_id, :item_id, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    amount = amount + 1,
-                    modify_date = CURRENT_TIMESTAMP';
+                    amount = amount + 1';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
@@ -144,10 +147,25 @@
             return $response;
         }
 
+        /**
+         * @param $userId
+         * @param $item
+         * @return bool
+         */
         private function _checkItemConditions($userId, $item)
         {
             switch($item['condition_type']) {
-                case 'move':
+                case 'step':
+                    list($stepId, $stepLevel) = explode(':', $item['condition_value']);
+                    $conditionStep = UserStepModel::getInstance()->getUserStepByUserIdAndStepId($userId, $stepId);
+                    if($conditionStep->isError()) {
+                        return $conditionStep;
+                    }
+                    $conditionStep = $conditionStep->getData();
+                    if(!$conditionStep) {
+                        return false;
+                    }
+                    return $conditionStep['level'] >= $stepLevel;
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);
@@ -157,5 +175,7 @@
                     $user = $user->getData();
                     return $user[$item['condition_type']] == $item['condition_value'];
             }
+
+            return false;
         }
     }

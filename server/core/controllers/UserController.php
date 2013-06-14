@@ -62,6 +62,13 @@
         }
 
         /**
+         * Покупка предмета
+         */
+        public function buyItemAction() {
+            UserItemModel::getInstance()->buyUserItem($this->getUserId(), $this->getRequest()->getParam('item_id', false))->send();
+        }
+
+        /**
          * Проверка таймеров пользователя
          * @return Response
          */

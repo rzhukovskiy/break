@@ -72,7 +72,7 @@
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
-                  diamonds + :diamonds >= 0 AND
+                  stamina + :stamina >= 0 AND
                   energy + :energy >= 0';
             $query = $db->prepare($sql);
             $query->execute(array(
@@ -82,7 +82,8 @@
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
                 ':stamina_max'  => isset($data['stamina_max']) ? $data['stamina_max'] : 0,
-                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0
+                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
+                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0
             ));
 
             $err = $query->errorInfo();

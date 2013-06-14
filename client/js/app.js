@@ -1,37 +1,34 @@
-fb = {
+social = {
     /**
      * Постит сообщение на стене пользователя
-     * @param picture - урл картинки
-     * @param caption - заголовок
-     * @param description - описание
-     * @param actions - текст в линке в подвале сообщения
+     * @param message - сообщение
      */
-    writeWall:function(picture, caption, description, actions) {
-        FB.ui({
-                method: 'feed',
-                name: caption,
-                picture: picture,
-                description: description,
-                actions: {name: actions, link: fb_params.url}
-            },
-            function(response) {
-                if (response && response.post_id) {
-                    thisMovie( "bubble01" ).jsonDataCallBack( '{"write":1}' );
-                }
-            });
+    writeWall:function(message) {
+        VK.api("wall.post", {message: message, test_mode: 1}, function(response) {
+            thisMovie().sendFromJS(response);
+        });
     },
     /**
      * Зовет друзей в игру
-     * @param message - сообщение
      */
-    inviteFriends:function(title, message, to) {
-        FB.ui({method: 'apprequests',
-            filters: ['app_non_users'], //только тех, что не установили игру
-            title: title,
-            message: message,
-            to: to,
-            data: {type: 'invite', object_id: 'null'}
-        }, fb.requestCallback);
+    inviteFriends:function() {
+        VK.callMethod("showInviteBox");
+    },
+    /**
+     * Список всех друзей
+     */
+    getAllFriends:function() {
+        VK.api("friends.get", {fields: 'photo_medium', test_mode: 1}, function(response) {
+            thisMovie().sendFromJS(response);
+        });
+    },
+    /**
+     * Список друзей в игре
+     */
+    getAppFriends:function() {
+        VK.api("execute", {code: 'return API.getProfiles({"uids":API.getAppFriends(), "fields": "photo_medium", "test_mode": 1});', test_mode: 1}, function(response) {
+            thisMovie().sendFromJS(response);
+        });
     },
     /**
      * Покупка внутриигровой валюты за кредиты
