@@ -69,6 +69,13 @@
         }
 
         /**
+         * Учим движение
+         */
+        public function learnStepAction() {
+            UserStepModel::getInstance()->trainUserStep($this->getUserId(), $this->getRequest()->getParam('step_id', false))->send();
+        }
+
+        /**
          * Проверка таймеров пользователя
          * @return Response
          */

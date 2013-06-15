@@ -115,6 +115,22 @@
         }
 
         /**
+         * применяем предмет
+         * @param int $userId
+         * @param array $item
+         * @return Response
+         */
+        public function applyUserItem($userId, $item) {
+            $response = new Response();
+
+            if($item['type']) {
+                $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
+            }
+
+            return $response;
+        }
+
+        /**
          * Добавить предмет
          * @param int $userId
          * @param string $itemId

@@ -68,7 +68,8 @@
                   stamina      = LEAST(stamina + :stamina, stamina_max),
                   stamina_max  = stamina_max + :stamina_max,
                   energy_time  = energy_time + :energy_time,
-                  stamina_time = stamina_time + :stamina_time
+                  stamina_time = stamina_time + :stamina_time,
+                  spent_energy = spent_energy + :spent_energy
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
@@ -83,7 +84,8 @@
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
                 ':stamina_max'  => isset($data['stamina_max']) ? $data['stamina_max'] : 0,
                 ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
-                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0
+                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
+                ':spent_energy' => isset($data['spent_energy']) ? $data['spent_energy'] : 0
             ));
 
             $err = $query->errorInfo();
@@ -224,7 +226,7 @@
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  stamina = stamina + LEAST((TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - energy),
+                  stamina = stamina + LEAST((TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - stamina),
                   stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time MINUTE)
                 WHERE
                   id = :user_id';
@@ -326,6 +328,7 @@
                     exp,
                     level,
                     energy,
+                    spent_energy,
                     energy_max,
                     stamina,
                     stamina_max,
@@ -345,6 +348,7 @@
                     0,
                     1,
                     :energy,
+                    0,
                     :energy_max,
                     :stamina,
                     :stamina_max,

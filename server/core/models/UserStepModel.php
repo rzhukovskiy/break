@@ -106,9 +106,13 @@
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
+            $learningStepLevel = isset($userStep['level']) ? $userStep['level'] + 1 : 1;
+            $energyCost = -1 * $step['energy_' . $learningStepLevel];
+            $coinsCost = isset($step['coins_' . $learningStepLevel]) ? -1 * $step['coins_' . $learningStepLevel] : 0;
             $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'energy' => -1 * $step['energy_' . (isset($userStep['level']) ? $userStep['level'] + 1 : 0)],
-                'coins'  => -1 * $step['coins_' . (isset($userStep['level']) ? $userStep['level'] + 1 : 0)]
+                'energy'        => $energyCost,
+                'coins'         => $coinsCost,
+                'spent_energy'  => -1 * $energyCost
             ));
             if($awardResult->isError()) {
                 return $awardResult;
@@ -139,7 +143,7 @@
                 VALUES
                     (:user_id, :step_id, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    level = level + 1,';
+                    level = level + 1';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
@@ -173,6 +177,9 @@
                         return false;
                     }
                     return $conditionStep['level'] >= $stepLevel;
+                    break;
+                case '':
+                    return true;
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);
