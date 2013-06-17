@@ -45,6 +45,13 @@
         }
 
         /**
+         * Удаление пользователя
+         */
+        public function deleteAction() {
+            UserModel::getInstance()->deleteUserByUserId($this->getUserId())->send();
+        }
+
+        /**
          * Даем ежедневную награду
          */
         public function dailyAwardAction() {
@@ -72,7 +79,7 @@
          * Учим движение
          */
         public function learnStepAction() {
-            UserStepModel::getInstance()->trainUserStep($this->getUserId(), $this->getRequest()->getParam('step_id', false))->send();
+            UserStepModel::getInstance()->trainUserStep($this->getUserId(), $this->getRequest()->getParam('step_id', false), $this->getRequest()->getParam('energy_spent', 0))->send();
         }
 
         /**

@@ -84,9 +84,10 @@
          * Потренить движение
          * @param int $userId
          * @param string $stepId
+         * @param int $energySpent
          * @return Response
          */
-        public function trainUserStep($userId, $stepId) {
+        public function trainUserStep($userId, $stepId, $energySpent) {
             /** @var $dataDb PDO */
             $response = new Response();
 
@@ -107,18 +108,23 @@
             }
 
             $learningStepLevel = isset($userStep['level']) ? $userStep['level'] + 1 : 1;
-            $energyCost = -1 * $step['energy_' . $learningStepLevel];
             $coinsCost = isset($step['coins_' . $learningStepLevel]) ? -1 * $step['coins_' . $learningStepLevel] : 0;
             $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'energy'        => $energyCost,
+                'energy'        => -1 * $energySpent,
                 'coins'         => $coinsCost,
-                'spent_energy'  => -1 * $energyCost
+                'energy_spent'  => $energySpent
             ));
             if($awardResult->isError()) {
                 return $awardResult;
             }
 
-            $raiseResult = $this->raiseUserStepLevel($userId, $stepId);
+            $newEnergy = isset($userStep['energy_spent']) ? $userStep['energy_spent'] + $energySpent : $energySpent;
+            if($newEnergy >= $step['energy_' . $learningStepLevel]) {
+                $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $step['energy_' . $learningStepLevel]);
+            } else {
+                $raiseResult = $this->raiseUserStepEnergy($userId, $stepId, $energySpent);
+            }
+
             if($raiseResult->isError()) {
                 return $raiseResult;
             }
@@ -129,9 +135,10 @@
          * Добавить уровень указанному движению
          * @param int $userId
          * @param string $stepId
+         * @param int $energySpent
          * @return Response
          */
-        public function raiseUserStepLevel($userId, $stepId) {
+        public function raiseUserStepLevel($userId, $stepId, $energySpent) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -139,15 +146,52 @@
             $sql =
                'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, step_id, level, create_date)
+                    (user_id, step_id, energy_spent, level, create_date)
                 VALUES
-                    (:user_id, :step_id, 1, CURRENT_TIMESTAMP)
+                    (:user_id, :step_id, :energy_spent, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    level = level + 1';
+                    level = level + 1,
+                    energy_spent = :energy_spent';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
-                ':step_id'      => $stepId
+                ':step_id'      => $stepId,
+                ':energy_spent' => $energySpent
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
+            return $response;
+        }
+
+        /**
+         * Добавить 'ythub. указанному движению
+         * @param int $userId
+         * @param string $stepId
+         * @param int $energySpent
+         * @return Response
+         */
+        public function raiseUserStepEnergy($userId, $stepId, $energySpent) {
+            /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
+            $response = new Response();
+
+            $sql =
+                'INSERT INTO
+                    ' . $this->_table . '
+                    (user_id, step_id, energy_spent, level, create_date)
+                VALUES
+                    (:user_id, :step_id, :energy_spent, 0, CURRENT_TIMESTAMP)
+                ON DUPLICATE KEY UPDATE
+                    energy_spent = energy_spent + :energy_spent';
+            $query = $dataDb->prepare($sql);
+            $query->execute(array(
+                ':user_id'      => $userId,
+                ':step_id'      => $stepId,
+                ':energy_spent' => $energySpent
             ));
 
             $err = $query->errorInfo();

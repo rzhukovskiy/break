@@ -14,6 +14,36 @@
             return parent::getInstance();
         }
 
+        private function _raiseUserLevel($userId, $energySpent, $wins) {
+            $response = new Response();
+            $user = $this->getEntityByEntityId($userId);
+            if($user->isError()) {
+                return $user;
+            }
+            $user = $user->getData();
+
+            $level = LevelModel::getInstance()->getEntityByEntityId($user['level'] + 1);
+            if($level->isError()) {
+                return $level;
+            }
+            $level = $level->getData();
+
+            if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
+                $response->setData(array(
+                    'energy_spent' => $user['energy_spent'] + $energySpent - $level['energy'],
+                    'stamina_max'  => $level['stamina_max'] - $user['stamina_max'],
+                    'level'        => 1
+                ));
+            } else {
+                $response->setData(array(
+                    'energy_spent' => $user['energy_spent'] + $energySpent,
+                    'stamina_max'  => 0,
+                    'level'        => 0
+                ));
+            }
+            return $response;
+        }
+
         /**
          * Добавляем пользователю награду
          * @param int $userId
@@ -58,6 +88,22 @@
             $db = $this->getDataBase();
             $response = new Response();
 
+            $energySpent = isset($data['energy_spent']) ? $data['energy_spent'] : 0;
+            $wins        = isset($data['wins']) ? $data['wins'] : 0;
+            $staminaMax  = 0;
+            $level       = 0;
+            if($wins || $energySpent) {
+                $newData = $this->_raiseUserLevel($userId, $energySpent, $wins);
+                if($newData->isError()) {
+                    return $newData;
+                }
+                $newData = $newData->getData();
+
+                $energySpent = $newData['energy_spent'];
+                $staminaMax  = $newData['stamina_max'];
+                $level       = $newData['level'];
+            }
+
             $sql =
                 'UPDATE
                   user
@@ -69,7 +115,10 @@
                   stamina_max  = stamina_max + :stamina_max,
                   energy_time  = energy_time + :energy_time,
                   stamina_time = stamina_time + :stamina_time,
-                  spent_energy = spent_energy + :spent_energy
+                  energy_spent = :energy_spent,
+                  wins         = wins + :wins,
+                  battles      = battles + :battles,
+                  level        = level + :level
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
@@ -82,10 +131,13 @@
                 ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
-                ':stamina_max'  => isset($data['stamina_max']) ? $data['stamina_max'] : 0,
+                ':stamina_max'  => $staminaMax,
                 ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
                 ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
-                ':spent_energy' => isset($data['spent_energy']) ? $data['spent_energy'] : 0
+                ':energy_spent' => $energySpent,
+                ':wins'         => $wins,
+                ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
+                ':level'        => $level
             ));
 
             $err = $query->errorInfo();
@@ -328,7 +380,7 @@
                     exp,
                     level,
                     energy,
-                    spent_energy,
+                    energy_spent,
                     energy_max,
                     stamina,
                     stamina_max,
