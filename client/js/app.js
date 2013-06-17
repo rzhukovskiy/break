@@ -17,6 +17,14 @@ social = {
     /**
      * Список всех друзей
      */
+    getUser:function(uids) {
+        VK.api("user.get", {uids: uids, fields: 'photo_medium', test_mode: 1}, function(response) {
+            thisMovie().sendFromJS(response);
+        });
+    },
+    /**
+     * Список всех друзей
+     */
     getAllFriends:function() {
         VK.api("friends.get", {fields: 'photo_medium', test_mode: 1}, function(response) {
             thisMovie().sendFromJS(response);
