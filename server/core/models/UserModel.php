@@ -29,7 +29,7 @@
             $level = $level->getData();
 
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
-                $awardResult = $this->giveAward($userId, 'level_award');
+                $awardResult = $this->giveAward($userId, $level['award']);
                 if($awardResult->isError()) {
                     return $awardResult;
                 }
@@ -69,11 +69,7 @@
                 return $response;
             }
 
-            $response = $this->updateUserByUserId($userId, array(
-                'coins'     => $award['coins'],
-                'chips'     => $award['chips'],
-                'energy'    => $award['energy'],
-            ));
+            $response = $this->updateUserByUserId($userId, $award);
 
             if($response->isError()) {
                 return $response;
