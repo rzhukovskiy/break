@@ -31,7 +31,7 @@
             var attributes = { id: "application", name: "application" };
             swfobject.embedSWF(
                     "http://zluki.com/break/client/Main.swf?"+Math.floor(Math.random()*65535),
-                    "altContent", "790", "600", "11.4.0",
+                    "altContent", "790", "615", "11.4.0",
                     false,
                     flashvars, params, attributes);
 
