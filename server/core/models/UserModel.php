@@ -29,6 +29,10 @@
             $level = $level->getData();
 
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
+                $awardResult = $this->giveAward($userId, 'level_award');
+                if($awardResult->isError()) {
+                    return $awardResult;
+                }
                 $response->setData(array(
                     'energy_spent' => $user['energy_spent'] + $energySpent - $level['energy'],
                     'stamina_max'  => $level['stamina_max'] - $user['stamina_max'],
@@ -67,6 +71,7 @@
 
             $response = $this->updateUserByUserId($userId, array(
                 'coins'     => $award['coins'],
+                'chips'     => $award['chips'],
                 'energy'    => $award['energy'],
             ));
 
@@ -109,6 +114,7 @@
                   user
                 SET
                   coins        = coins + :coins,
+                  chips        = chips + :chips,
                   energy       = LEAST(energy + :energy, energy_max),
                   energy_max   = energy_max + :energy_max,
                   stamina      = LEAST(stamina + :stamina, stamina_max),
@@ -122,12 +128,14 @@
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
+                  chips + :chips >= 0 AND
                   stamina + :stamina >= 0 AND
                   energy + :energy >= 0';
             $query = $db->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
                 ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
+                ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
                 ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
@@ -318,7 +326,7 @@
              * если больше 2х дней или прошел весь цикл - сбрасываем счетчик дней
              */
             if(strtotime($user['award_date']) < time() - 24*60*60 && strtotime($user['award_date']) > time() - 48*60*60) {
-                $day = $user['award_day'] <= 4 ? $user['award_day'] + 1 : 1;
+                $day = $user['award_day'] <= 6 ? $user['award_day'] + 1 : 1;
             } else if(strtotime($user['award_date']) < time() - 48*60*60) {
                 $day = 1;
             } else {
@@ -386,6 +394,7 @@
                     battles,
                     wins,
                     coins,
+                    chips,
                     create_date,
                     award_date,
                     energy_date,
@@ -405,6 +414,7 @@
                     0,
                     0,
                     :coins,
+                    :chips,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
@@ -421,8 +431,9 @@
                 ':stamina'      => $settings['stamina_max'],
                 ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
-                ':energy_time'  => $settings['energy_time'],
-                ':stamina_time' => $settings['stamina_time']
+                ':chips'        => $settings['start_chips'],
+                ':energy_time'  => str_replace(',', '.', $settings['energy_time']),
+                ':stamina_time' => str_replace(',', '.', $settings['stamina_time'])
             ));
 
             $err = $query->errorInfo();
