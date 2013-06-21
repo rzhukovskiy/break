@@ -119,7 +119,7 @@
             }
 
             $newEnergy = isset($userStep['energy_spent']) ? $userStep['energy_spent'] + $energySpent : $energySpent;
-            $neededEnergy = $step['energy_' . $learningStepLevel] - isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0;
+            $neededEnergy = $step['energy_' . $learningStepLevel] - (isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0);
             if($newEnergy >= $neededEnergy) {
                 $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $neededEnergy);
             } else {
