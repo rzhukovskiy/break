@@ -119,8 +119,9 @@
             }
 
             $newEnergy = isset($userStep['energy_spent']) ? $userStep['energy_spent'] + $energySpent : $energySpent;
-            if($newEnergy >= $step['energy_' . $learningStepLevel]) {
-                $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $step['energy_' . $learningStepLevel]);
+            $neededEnergy = $step['energy_' . $learningStepLevel] - isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0;
+            if($newEnergy >= $neededEnergy) {
+                $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $neededEnergy);
             } else {
                 $raiseResult = $this->raiseUserStepEnergy($userId, $stepId, $energySpent);
             }
@@ -215,12 +216,14 @@
             }
             switch($step['condition_type']) {
                 case 'step':
-                    list($stepId, $stepLevel) = explode(':', $step['condition_value']);
-                    $conditionStep = $this->getUserStepByUserIdAndStepId($userId, $stepId)->getData();
-                    if(!$conditionStep) {
-                        return false;
+                    foreach(explode(',', $step['condition_value']) as $stepCondition) {
+                        list($stepId, $stepLevel) = explode(':', $stepCondition);
+                        $conditionStep = $this->getUserStepByUserIdAndStepId($userId, $stepId)->getData();
+                        if(!$conditionStep || $conditionStep['level'] < $stepLevel) {
+                            return false;
+                        }
                     }
-                    return $conditionStep['level'] >= $stepLevel;
+                    return true;
                     break;
                 case '':
                     return true;
