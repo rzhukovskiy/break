@@ -250,8 +250,8 @@
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  energy = energy + LEAST(TIMESTAMPDIFF(MINUTE, energy_date, CURRENT_TIMESTAMP) DIV  energy_time, energy_max - energy),
-                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(MINUTE, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time MINUTE)
+                  energy = energy + LEAST(TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV  energy_time, energy_max - energy),
+                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time SECOND)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
