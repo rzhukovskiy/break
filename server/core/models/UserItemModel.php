@@ -123,7 +123,7 @@
         public function applyUserItem($userId, $item) {
             $response = new Response();
 
-            if($item['type']) {
+            if($item['type'] and $item['type'] != 'client') {
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
             }
 

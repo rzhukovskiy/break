@@ -21,3 +21,12 @@
         'db_name'   => 'break',
         'driver'    => 'mysql',
     );
+
+    $config['redis_config'] = array(
+        'namespace'         => 'Breakdance_',
+        'serializerAdapter' => 'json',
+        'servers'           => array(array(
+            'port'          => '6379',
+            'host'          => '127.0.0.1',
+        ))
+    );

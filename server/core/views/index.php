@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <script type="text/javascript" src="../client/js/app.js?v=<?php echo time(); ?>"></script>
+        <script type="text/javascript" src="../client/js/pvp.js?v=<?php echo time(); ?>"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 
@@ -10,10 +11,16 @@
         </script>
 
         <script type="text/javascript">
+            <?php
+                $_REQUEST['viewer_id']  = isset($_REQUEST['viewer_id']) ? $_REQUEST['viewer_id'] : 1;
+                $_REQUEST['auth_key']   = isset($_REQUEST['auth_key']) ? $_REQUEST['auth_key'] : 1;
+                $_REQUEST['api_result'] = isset($_REQUEST['api_result']) ? $_REQUEST['api_result'] : '';
+            ?>
+            var LOAD_TIME = "<?=date('r');?>";
             var flashvars = new Array();
             flashvars.uid = <?php echo $_REQUEST['viewer_id'] ?>;
             flashvars.auth_key = '<?php echo $_REQUEST['auth_key'] ?>';
-            flashvars.user_info = <?php echo json_encode($_REQUEST['api_result']) ?> ;
+            flashvars.user_info = '<?php echo json_encode($_REQUEST['api_result']) ?>';
             flashvars.isLocal = "0";
 
             var d = new Date();
@@ -49,6 +56,7 @@
             <img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
         </a>
     </div>
+
     <div class="tests">
         <a href="http://zluki.com/break/server/index.php/user/get?uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Get user</a> |
         <a href="http://zluki.com/break/server/index.php/user/add?hair_id=red&face_id=ugly&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Add user</a> |
@@ -56,6 +64,17 @@
         <a href="http://zluki.com/break/server/index.php/user/learnStep?energy_spent=100&step_id=indian_step&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Raise step level</a> |
         <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=green_hat&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
         <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a>
+    </div>
+
+    <div id="buttons">
+        <input type="button" value="Start listening" onclick="pvp.channels.push(new pvp.listener('http://zluki.com/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" />
+        <input type="button" value="Stop listening" onclick="pvp.channels[0].stop()" /><br />
+        To: <input type="text" value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" />
+        Message: <input type="text" value="Hello" name="text" id="text" />
+        <input type="button" value="Send hello" onclick="pvp.sendMessage($('#cid').val(), $('#text').val())" />
+    </div>
+
+    <div id="messages">
     </div>
 </body>
 </html>
