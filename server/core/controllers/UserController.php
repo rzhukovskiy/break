@@ -35,6 +35,14 @@
         }
 
         /**
+         * Запрос всех данных о списке пользователей
+         */
+        public function getListAction() {
+            $userModel = UserModel::getInstance();
+            $userModel->getUserListByIds($this->getRequest()->getParam('uids', false))->send();
+        }
+
+        /**
          * Добавление нового пользователя
          */
         public function addAction() {

@@ -14,6 +14,30 @@
             return parent::getInstance();
         }
 
+        /**
+         * Получить список пользователей по ID
+         * @param string $ids
+         * @return Response
+         */
+        public function getUserListByIds($ids) {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $ids = implode(',', array_map('intval', explode(',', $ids)));
+            $sql = 'SELECT * FROM ' . $this->_table . ' WHERE id IN (' . $ids . ')';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
         private function _raiseUserLevel($userId, $energySpent, $wins) {
             $response = new Response();
             $user = $this->getEntityByEntityId($userId);
