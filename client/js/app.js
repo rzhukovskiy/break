@@ -5,7 +5,7 @@ social = {
      */
     writeWall:function(message) {
         VK.api("wall.post", {message: message, test_mode: 1}, function(response) {
-            hisMovie("application").sendFromJS( JSON.stringify(response) );
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
     /**
@@ -27,7 +27,7 @@ social = {
      */
     getAllFriends:function() {
         VK.api("friends.get", {fields: 'photo_medium', test_mode: 1}, function(response) {
-            hisMovie("application").sendFromJS( JSON.stringify(response) );
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
     /**
@@ -35,7 +35,7 @@ social = {
      */
     getAppFriends:function() {
         VK.api("execute", {code: 'return API.getProfiles({"uids":API.getAppFriends(), "fields": "photo_medium", "test_mode": 1});', test_mode: 1}, function(response) {
-            hisMovie("application").sendFromJS( JSON.stringify(response) );
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
     /**

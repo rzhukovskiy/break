@@ -16,7 +16,7 @@
          * Конструктор. Склеивает полученные гет и пост массивы и записывает в _data
          */
         public function __construct() {
-            $data = array_merge($_POST, $_GET);
+            $data = array_merge($_POST, $_GET, $_REQUEST);
             if($data) {
                 $this->_data = $data;
             } else {
@@ -59,10 +59,15 @@
             if ($this->_settings->isTestMode()) {
                 return true;
             } else {
+                $reserved = array('ts', 'access_key');
                 ksort($this->_data);
                 $data = '';
-                foreach($this->_data as $key => $value)
+                foreach($this->_data as $key => $value) {
+                    if(in_array($key, $reserved)) {
+                        continue;
+                    }
                     $data .= $key . $value;
+                }
 
                 $accessKey      = $this->getParam(self::ACCESS_KEY_PARAM);
                 $internalKey    = $this->_settings->getParam(Globals::INTERNAL_KEY_PARAM);
@@ -76,7 +81,7 @@
                     $time = $ts;
                 }
 
-                return ($accessKey == md5($internalKey . md5($internalKey . $ts . $data))) && ($time >= time() - $requestTimeout);
+                return ($accessKey == md5($internalKey . md5($internalKey . $ts . $data))) && ($time >= (time() - $requestTimeout));
             }
         }
     }
