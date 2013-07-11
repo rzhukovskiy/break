@@ -27,6 +27,7 @@
             $response = new Response();
             $response->setData(array(
                 'user'                      => $user->getData(), //пользователь
+                'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
                 'user_request_from_list'    => RequestModel::getInstance()->getRequestListByUserFromId($this->getUserId())->getData(), //запросы
@@ -50,6 +51,21 @@
             $hairId = $this->getRequest()->getParam('hair_id', 1);
 
             UserModel::getInstance()->addUserByUserId($this->getUserId(), $faceId, $hairId)->send();
+        }
+
+        /**
+         * Добавление нового пользователя
+         */
+        public function saveSettingsAction() {
+            $music = $this->getRequest()->getParam('music', 1);
+            $sfx = $this->getRequest()->getParam('sfx', 1);
+            $lang = $this->getRequest()->getParam('lang', 1);
+
+            UserSettingsModel::getInstance()->updateSettingsByUserId($this->getUserId(), array(
+                'music' => $music,
+                'sfx' => $sfx,
+                'lang' => $lang
+            ))->send();
         }
 
         /**

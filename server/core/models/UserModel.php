@@ -459,9 +459,10 @@
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
-            } else {
-                $response->setData($db->lastInsertId());
             }
+
+            $response = UserSettingsModel::getInstance()->updateSettingsByUserId($userId, array('music' => 1, 'sfx' => 1, 'lang' => 'ru'));
+
             return $response;
         }
     }

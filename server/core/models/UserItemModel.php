@@ -111,6 +111,7 @@
             if($raiseResult->isError()) {
                 return $raiseResult;
             }
+            $response->setData(array_merge($awardResult->getData(),array('item_id'   => $itemId)));
             return $awardResult;
         }
 

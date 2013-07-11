@@ -58,11 +58,12 @@
     </div>
 
     <div class="tests">
-        <a href="http://zluki.com/break/server/index.php/user/get?uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Get user</a> |
-        <a href="http://zluki.com/break/server/index.php/user/add?hair_id=red&face_id=ugly&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Add user</a> |
-        <a href="http://zluki.com/break/server/index.php/user/delete?uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Delete user</a> |
-        <a href="http://zluki.com/break/server/index.php/user/learnStep?energy_spent=100&step_id=indian_step&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Raise step level</a> |
-        <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=green_hat&uid=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
+        <a href="http://zluki.com/break/server/index.php/user/get?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Get user</a> |
+        <a href="http://zluki.com/break/server/index.php/user/add?hair_id=red&face_id=ugly&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Add user</a> |
+        <a href="http://zluki.com/break/server/index.php/user/delete?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Delete user</a> |
+        <a href="http://zluki.com/break/server/index.php/user/learnStep?energy_spent=100&step_id=indian_step&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Raise step level</a> |
+        <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=green_hat&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
+        <a href="http://zluki.com/break/server/index.php/user/saveSettings?music=1&sfx=0&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Save settings</a> |
         <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a>
     </div>
 
