@@ -5,7 +5,7 @@
     class Request {
         const ACCESS_KEY_PARAM  = 'access_key';
         const TIMESTAMP_PARAM   = 'ts';
-        const USER_ID_PARAM     = 'user_id';
+        const USER_ID_PARAM     = 'viewer_id';
 
         /** @var array */
         private $_data;

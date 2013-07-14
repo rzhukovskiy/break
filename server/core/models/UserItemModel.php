@@ -111,8 +111,8 @@
             if($raiseResult->isError()) {
                 return $raiseResult;
             }
-            $response->setData(array_merge($awardResult->getData(),array('item_id'   => $itemId)));
-            return $awardResult;
+            $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(),array('item_id'   => $itemId)));
+            return $response;
         }
 
         /**
@@ -190,7 +190,7 @@
                         return false;
                     }
                     $user = $user->getData();
-                    return $user[$item['condition_type']] == $item['condition_value'];
+                    return $user[$item['condition_type']] >= $item['condition_value'];
             }
 
             return false;
