@@ -111,7 +111,8 @@
             if($raiseResult->isError()) {
                 return $raiseResult;
             }
-            return $awardResult;
+            $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(),array('item_id'   => $itemId)));
+            return $response;
         }
 
         /**
@@ -123,7 +124,7 @@
         public function applyUserItem($userId, $item) {
             $response = new Response();
 
-            if($item['type']) {
+            if($item['type'] and $item['type'] != 'client') {
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
             }
 
@@ -189,7 +190,7 @@
                         return false;
                     }
                     $user = $user->getData();
-                    return $user[$item['condition_type']] == $item['condition_value'];
+                    return $user[$item['condition_type']] >= $item['condition_value'];
             }
 
             return false;

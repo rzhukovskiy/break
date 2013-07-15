@@ -31,7 +31,7 @@
          */
         private function vkUserId() {
             $vkConfig = $this->_globals->getParam('vk');
-            $uid = $this->getRequest()->getParam('uid', false);
+            $uid = $this->getRequest()->getParam('viewer_id', false);
             $authKey = $this->getRequest()->getParam('auth_key', false);
 
             if(!$authKey || !$uid || md5($vkConfig['app_id'] . '_' . $uid . '_' . $vkConfig['api_secret']) != $authKey) {

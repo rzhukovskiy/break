@@ -10,6 +10,7 @@
         const INTERNAL_KEY_PARAM        = 'internal_key';
         const SITE_PATH_PARAM           = 'site_path';
         const DB_CONFIG_PARAM           = 'db_config';
+        const REDIS_CONFIG_PARAM        = 'redis_config';
         const PLATFORM_PARAM            = 'platform';
         const DEFAULT_PLATFORM_PARAM    = 'default_platform';
 
@@ -21,6 +22,8 @@
         private $_gameBase;
         /** @var MongoDb */
         private $_dataBase;
+        /** @var Rediska */
+        private $_rediska;
         /** @var Error */
         private $_error;
         /** @var Http */
@@ -141,6 +144,18 @@
                 $this->_gameBase = $connection->selectDB($params['game_base']);
                 $this->_dataBase = $connection->selectDB($params['data_base']);
             }
+        }
+
+        /**
+         * @return Rediska
+         */
+        public function getRediska() {
+            if(!$this->_rediska) {
+                $params = $this->getParam(self::REDIS_CONFIG_PARAM);
+                $this->_rediska = new Rediska($params);
+            }
+
+            return $this->_rediska;
         }
 
         /**

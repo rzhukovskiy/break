@@ -1,7 +1,7 @@
 <?php
     $config['error_handling'] = true;
     $config['platform']       = 'vk';
-    $config['xml_path']       = '../client/assets/config/data';
+    $config['xml_path']       = '../client/assets/data';
 
     $config['vk'] = array (
         'app_id'      => '3704573',
@@ -10,7 +10,7 @@
     );
 
     $config['internal_key']             = 'wfp4eo34';
-    $config['request_timeout']          = 3;
+    $config['request_timeout']          = 30;
     $config['test_mode']                = true; //if set to true then it can work without auth on facebook with user id = test_mode_user_id
     $config['test_mode_user']           = 1;
 
@@ -20,4 +20,13 @@
         'host'      => 'localhost',
         'db_name'   => 'break',
         'driver'    => 'mysql',
+    );
+
+    $config['redis_config'] = array(
+        'namespace'         => 'Breakdance_',
+        'serializerAdapter' => 'json',
+        'servers'           => array(array(
+            'port'          => '6379',
+            'host'          => '127.0.0.1',
+        ))
     );

@@ -3,6 +3,9 @@
      * Контроллер отвечающий за отображение
      */
     class IndexController extends BaseController {
+        /** @var bool */
+        protected $_withoutChecking = true;
+
         /**
          * Основная страница
          */

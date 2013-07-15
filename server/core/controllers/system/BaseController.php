@@ -15,6 +15,8 @@
         protected $_userId = null;
         /** @var string */
         protected $_viewPath = null;
+        /** @var bool */
+        protected $_withoutChecking = false;
 
         public function __construct() {
             //project settings
@@ -27,7 +29,7 @@
             $this->_social = new Social();
 
             //проверяем валидность запроса
-            if(!$this->getRequest()->isValid()) {
+            if(!$this->_withoutChecking && !$this->getRequest()->isValid()) {
                 $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
             }
 
