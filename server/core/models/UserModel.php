@@ -462,6 +462,20 @@
             }
 
             $response = UserSettingsModel::getInstance()->updateSettingsByUserId($userId, array('music' => 1, 'sfx' => 1, 'lang' => 'ru'));
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_t-shirt']);
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_shorts']);
+            if($response->isError()) {
+                return $response;
+            }
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_gumshoes']);
 
             return $response;
         }

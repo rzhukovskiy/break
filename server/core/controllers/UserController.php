@@ -29,6 +29,7 @@
                 'user'                      => $user->getData(), //пользователь
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
+                'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($this->getUserId())->getData(), //слоты
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
                 'user_request_from_list'    => RequestModel::getInstance()->getRequestListByUserFromId($this->getUserId())->getData(), //запросы
                 'user_request_to_list'      => RequestModel::getInstance()->getRequestListByUserToId($this->getUserId())->getData(), //запросы
@@ -97,6 +98,16 @@
          */
         public function buyItemAction() {
             UserItemModel::getInstance()->buyUserItem($this->getUserId(), $this->getRequest()->getParam('item_id', false))->send();
+        }
+
+        /**
+         * Экипировка предмета
+         */
+        public function equipSlotAction() {
+            UserSlotModel::getInstance()->equipUserSlot($this->getUserId(),
+                $this->getRequest()->getParam('slot_id', false),
+                $this->getRequest()->getParam('item_id', false)
+            )->send();
         }
 
         /**

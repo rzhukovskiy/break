@@ -2,13 +2,13 @@
     /**
      * работа с user_item таблицей. предметы, принадлежащие юзерам
      */
-    class UserItemModel extends BaseModel {
-        protected $_table = 'user_item';
+    class UserSlotModel extends BaseModel {
+        protected $_table = 'user_slot';
 
         /**
          * Создать самого себя
          *
-         * @return UserItemModel
+         * @return UserSlotModel
          */
         public static function getInstance() {
             return parent::getInstance();
@@ -19,7 +19,7 @@
          * @param int $userId
          * @return Response
          */
-        public function getUserItemListByUserId($userId) {
+        public function getUserSlotListByUserId($userId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -48,10 +48,10 @@
         /**
          * Получить конкретный предмет у конкретного пользователя
          * @param int $userId
-         * @param string $itemId
+         * @param string $slotId
          * @return Response
          */
-        public function getUserItemByUserIdAndItemId($userId, $itemId) {
+        public function getUserSlotByUserIdAndSlotId($userId, $slotId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -63,12 +63,12 @@
                     ' . $this->_table . '
                 WHERE
                     user_id = :user_id AND
-                    item_id = :item_id
+                    slot_id = :slot_id
                 LIMIT 1';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId,
-                ':item_id' => $itemId,
+                ':step_id' => $slotId,
             ));
 
             $err = $query->errorInfo();
@@ -83,61 +83,33 @@
         /**
          * Купить предмет
          * @param int $userId
+         * @param string $slotId
          * @param string $itemId
          * @return Response
          */
-        public function buyUserItem($userId, $itemId) {
+        public function equipUserSlot($userId, $slotId, $itemId) {
             /** @var $dataDb PDO */
             $response = new Response();
 
-            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
-            if($item->isError()) {
-                return $item;
-            }
-            $item = $item->getData();
-
-            if(!$this->_checkItemConditions($userId, $item)) {
-                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
+            if(!$this->_checkItem($userId, $itemId)) {
+                return $response->setCode(Response::CODE_WRONG_DATA)->setError('User don`t have this item');
             }
 
-            $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'coins'  => -1 * $item['coins']
-            ));
-            if($awardResult->isError()) {
-                return $awardResult;
-            }
-
-            $addResult = $this->addUserItem($userId, $itemId);
+            $addResult = $this->addUserItemToSlot($userId, $slotId, $itemId);
             if($addResult->isError()) {
                 return $addResult;
             }
-            $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(),array('item_id'   => $itemId)));
-            return $response;
-        }
-
-        /**
-         * применяем предмет
-         * @param int $userId
-         * @param array $item
-         * @return Response
-         */
-        public function applyUserItem($userId, $item) {
-            $response = new Response();
-
-            if($item['type'] and $item['type'] != 'client') {
-                $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
-            }
-
-            return $response;
+            return $addResult;
         }
 
         /**
          * Добавить предмет
          * @param int $userId
+         * @param string $slotId
          * @param string $itemId
          * @return Response
          */
-        public function addUserItem($userId, $itemId) {
+        public function addUserItemToSlot($userId, $slotId, $itemId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -145,14 +117,15 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, item_id, amount, create_date)
+                    (user_id, slot_id, item_id)
                 VALUES
-                    (:user_id, :item_id, 1, CURRENT_TIMESTAMP)
+                    (:user_id, :slot_id, :item_id)
                 ON DUPLICATE KEY UPDATE
-                    amount = amount + 1';
+                    item_id = :item_id';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
+                ':slot_id'      => $slotId,
                 ':item_id'      => $itemId
             ));
 
@@ -166,33 +139,12 @@
 
         /**
          * @param $userId
-         * @param $item
+         * @param $itemId
          * @return bool
          */
-        private function _checkItemConditions($userId, $item)
+        private function _checkItem($userId, $itemId)
         {
-            switch($item['condition_type']) {
-                case 'step':
-                    list($stepId, $stepLevel) = explode(':', $item['condition_value']);
-                    $conditionStep = UserStepModel::getInstance()->getUserStepByUserIdAndStepId($userId, $stepId);
-                    if($conditionStep->isError()) {
-                        return $conditionStep;
-                    }
-                    $conditionStep = $conditionStep->getData();
-                    if(!$conditionStep) {
-                        return false;
-                    }
-                    return $conditionStep['level'] >= $stepLevel;
-                    break;
-                default:
-                    $user = UserModel::getInstance()->getEntityByEntityId($userId);
-                    if($user->isError()) {
-                        return false;
-                    }
-                    $user = $user->getData();
-                    return $user[$item['condition_type']] >= $item['condition_value'];
-            }
-
-            return false;
+            $result = UserItemModel::getInstance()->getUserItemByUserIdAndItemId($userId, $itemId);
+            return !$result->isError() && $result->getData();
         }
     }
