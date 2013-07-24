@@ -100,11 +100,13 @@
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
-            $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'coins'  => -1 * $item['coins']
-            ));
-            if($awardResult->isError()) {
-                return $awardResult;
+            if($item['coins'] > 0) {
+                $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
+                    'coins'  => -1 * $item['coins']
+                ));
+                if($awardResult->isError()) {
+                    return $awardResult;
+                }
             }
 
             $addResult = $this->addUserItem($userId, $itemId);
@@ -121,7 +123,7 @@
          * @param array $item
          * @return Response
          */
-        public function applyUserItem($userId, $item) {
+        private function _applyUserItem($userId, $item) {
             $response = new Response();
 
             if($item['type'] and $item['type'] != 'client') {
@@ -141,6 +143,14 @@
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
+
+            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
+            if($item->isError()) {
+                return $item;
+            }
+            $item = $item->getData();
+
+            $response = $this->_applyUserItem($userId, $item);
 
             $sql =
                 'INSERT INTO

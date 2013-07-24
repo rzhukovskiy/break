@@ -121,6 +121,11 @@
             $newEnergy = isset($userStep['energy_spent']) ? $userStep['energy_spent'] + $energySpent : $energySpent;
             $neededEnergy = $step['energy_' . $learningStepLevel] - (isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0);
             if($newEnergy >= $neededEnergy) {
+                $awardResult = UserModel::getInstance()->giveAward($userId, $step['award_id_' . $learningStepLevel]);
+                if($awardResult->isError()) {
+                    return $awardResult;
+                }
+
                 $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $neededEnergy);
             } else {
                 $raiseResult = $this->raiseUserStepEnergy($userId, $stepId, $energySpent);

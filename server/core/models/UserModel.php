@@ -98,6 +98,15 @@
             if($response->isError()) {
                 return $response;
             }
+
+            if(isset($award['item_id']) && $award['item_id']) {
+                $response = UserItemModel::getInstance()->addUserItem($userId, $award['item_id']);
+
+                if($response->isError()) {
+                    return $response;
+                }
+            }
+
             $response->setData($award);
             return $response;
         }
@@ -466,17 +475,37 @@
                 return $response;
             }
 
-            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_t-shirt']);
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_body']);
             if($response->isError()) {
                 return $response;
             }
 
-            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_shorts']);
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_head']);
             if($response->isError()) {
                 return $response;
             }
-            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_gumshoes']);
 
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_hands']);
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_legs']);
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_shoes']);
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_music']);
+            if($response->isError()) {
+                return $response;
+            }
+
+            $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_cover']);
             return $response;
         }
     }
