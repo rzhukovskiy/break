@@ -65,15 +65,17 @@
         <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=t-shirt_yellow&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
         <a href="http://zluki.com/break/server/index.php/user/equipSlot?slot_id=arms&item_id=t-shirt_yellow&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Equip slot</a> |
         <a href="http://zluki.com/break/server/index.php/user/saveSettings?music=1&sfx=0&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Save settings</a> |
+        <a href="http://zluki.com/break/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Send invite</a> |
         <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a>
     </div>
 
     <div id="buttons">
         <input type="button" value="Start listening" onclick="pvp.channels.push(new pvp.listener('http://zluki.com/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" />
         <input type="button" value="Stop listening" onclick="pvp.channels[0].stop()" /><br />
-        To: <input type="text" value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" />
+        To: <input type="text" value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" /><br />
+        Type: <input type="text" value="" name="type" id="type" /><br />
         Message: <input type="text" value="Hello" name="text" id="text" />
-        <input type="button" value="Send hello" onclick="pvp.sendMessage($('#cid').val(), $('#text').val())" />
+        <input type="button" value="Send hello" onclick="pvp.sendMessage(<?php echo $_REQUEST['viewer_id'] ?>, $('#cid').val(), $('#text').val(), $('#type').val())" />
     </div>
 
     <div id="messages">

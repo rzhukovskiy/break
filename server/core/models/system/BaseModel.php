@@ -98,6 +98,29 @@
         }
 
         /**
+         * Получить сущность по ID
+         * @param string $list
+         * @return Response
+         */
+        public function getEntityListByEntityList($list) {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT * FROM ' . $this->_table . ' WHERE id IN ("' . implode('","', $list) . '")';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
          * Создает таблицу в игровой базе
          * @param $name string - имя таблицы
          * @param $fields array - поля таблицы (имя => тип)

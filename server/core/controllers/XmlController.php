@@ -55,13 +55,16 @@
                         $level = isset($stepData['table_rows'][$i]['level']) ? $stepData['table_rows'][$i]['level'] : 0;
                         $coins = isset($stepData['table_rows'][$i]['coins']) ? $stepData['table_rows'][$i]['coins'] : 0;
                         $energy = isset($stepData['table_rows'][$i]['energy']) ? $stepData['table_rows'][$i]['energy'] : 0;
+                        $masteryPoints = isset($stepData['table_rows'][$i]['mastery_points']) ? $stepData['table_rows'][$i]['mastery_points'] : 0;
                         $award = isset($stepData['table_rows'][$i]['award_id']) ? $stepData['table_rows'][$i]['award_id'] : 0;
 
                         $tableData['table_fields']['coins_' . $level] = 'int';
                         $tableData['table_fields']['energy_' . $level] = 'int';
+                        $tableData['table_fields']['mastery_points_' . $level] = 'int';
                         $tableData['table_fields']['award_id_' . $level] = 'string';
                         $tableRow['coins_' . $level] = $coins;
                         $tableRow['energy_' . $level] = $energy;
+                        $tableRow['mastery_points_' . $level] = $masteryPoints;
                         $tableRow['award_id_' . $level] = $award;
                     }
                 }

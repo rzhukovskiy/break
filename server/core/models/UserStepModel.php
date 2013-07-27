@@ -46,6 +46,37 @@
         }
 
         /**
+         * Список движений у определенного пользователя (ассоциативный массив)
+         * @param int $userId
+         * @return Response
+         */
+        public function getUserStepPairsListByUserId($userId) {
+            /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
+            $response = new Response();
+
+            $sql =
+                'SELECT
+                    step_id, level
+                FROM
+                    ' . $this->_table . '
+                WHERE
+                    user_id = :user_id';
+            $query = $dataDb->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_KEY_PAIR));
+            }
+            return $response;
+        }
+
+        /**
          * Получить конкретное движение у конкретного пользователя
          * @param int $userId
          * @param string $stepId
@@ -108,19 +139,19 @@
             }
 
             $learningStepLevel = isset($userStep['level']) ? $userStep['level'] + 1 : 1;
-            $coinsCost = isset($step['coins_' . $learningStepLevel]) ? -1 * $step['coins_' . $learningStepLevel] : 0;
-            $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                'energy'        => -1 * $energySpent,
-                'coins'         => $coinsCost,
-                'energy_spent'  => $energySpent
-            ));
-            if($awardResult->isError()) {
-                return $awardResult;
-            }
-
             $newEnergy = isset($userStep['energy_spent']) ? $userStep['energy_spent'] + $energySpent : $energySpent;
             $neededEnergy = $step['energy_' . $learningStepLevel] - (isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0);
             if($newEnergy >= $neededEnergy) {
+                $coinsCost = isset($step['coins_' . $learningStepLevel]) ? -1 * $step['coins_' . $learningStepLevel] : 0;
+                $updateResult = UserModel::getInstance()->updateUserByUserId($userId, array(
+                    'energy'        => -1 * $energySpent,
+                    'coins'         => $coinsCost,
+                    'energy_spent'  => $energySpent
+                ));
+                if($updateResult->isError()) {
+                    return $updateResult;
+                }
+
                 $awardResult = UserModel::getInstance()->giveAward($userId, $step['award_id_' . $learningStepLevel]);
                 if($awardResult->isError()) {
                     return $awardResult;
@@ -128,13 +159,21 @@
 
                 $raiseResult = $this->raiseUserStepLevel($userId, $stepId, $newEnergy - $neededEnergy);
             } else {
+                $updateResult = UserModel::getInstance()->updateUserByUserId($userId, array(
+                    'energy'        => -1 * $energySpent,
+                    'energy_spent'  => $energySpent
+                ));
+                if($updateResult->isError()) {
+                    return $updateResult;
+                }
+
                 $raiseResult = $this->raiseUserStepEnergy($userId, $stepId, $energySpent);
             }
 
             if($raiseResult->isError()) {
                 return $raiseResult;
             }
-            return $awardResult;
+            return $updateResult;
         }
 
         /**

@@ -7,6 +7,6 @@
          * Основная страница
          */
         public function testAction() {
-            BattleModel::getInstance()->testRedis();
+            BattleModel::getInstance()->sendMessage($this->getUserId(), $this->getRequest()->getParam('recipient', false), json_decode($this->getRequest()->getParam('message', false), true))->send();
         }
     }

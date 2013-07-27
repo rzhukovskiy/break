@@ -70,7 +70,8 @@ pvp = {
     },
     onSuccess: function(data) {
         if (data) {
-            $("#messages").prepend(data.message + "<br />");
+            console.log(data);
+            $("#messages").prepend(data + "<br />");
         } else {
             console.log("EMPTY DATA");
         }
@@ -81,7 +82,8 @@ pvp = {
     stopListener: function() {
         this.listener.stop();
     },
-    sendMessage: function(cid, text) {
-        $.post('http://zluki.com/pub?cid=' + cid, '{"message": "' + text + '"}');
+    sendMessage: function(uid, cid, text, type) {
+        var data = '{"type": "' + type + '","message": "' + text + '"}';
+        $.post('http://zluki.com/break/server/index.php/battle/test?viewer_id=' + uid + '&recipient=' + cid, {message: data});
     }
 }
