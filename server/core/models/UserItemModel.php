@@ -126,7 +126,7 @@
         private function _applyUserItem($userId, $item) {
             $response = new Response();
 
-            if($item['type'] and $item['type'] != 'client') {
+            if($item['type'] and $item['type'] != 'client' && $item['power']) {
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
             }
 
