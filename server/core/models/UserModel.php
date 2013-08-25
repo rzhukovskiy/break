@@ -148,8 +148,8 @@
                   energy_max   = energy_max + :energy_max,
                   stamina      = LEAST(stamina + :stamina, stamina_max),
                   stamina_max  = stamina_max + :stamina_max,
-                  energy_time  = energy_time + :energy_time,
-                  stamina_time = stamina_time + :stamina_time,
+                  energy_time  = energy_time + (:energy_time * energy_time) / 100,
+                  stamina_time = stamina_time + (:stamina_time * stamina_time) / 100,
                   energy_spent = :energy_spent,
                   wins         = wins + :wins,
                   battles      = battles + :battles,
@@ -461,8 +461,8 @@
                 ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
                 ':chips'        => $settings['start_chips'],
-                ':energy_time'  => str_replace(',', '.', $settings['energy_time']),
-                ':stamina_time' => str_replace(',', '.', $settings['stamina_time'])
+                ':energy_time'  => $settings['energy_time'],
+                ':stamina_time' => $settings['stamina_time']
             ));
 
             $err = $query->errorInfo();
