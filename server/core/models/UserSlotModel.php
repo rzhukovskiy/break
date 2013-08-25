@@ -84,32 +84,10 @@
          * Купить предмет
          * @param int $userId
          * @param string $slotId
-         * @param string $itemId
+         * @param string $user_item_id
          * @return Response
          */
-        public function equipUserSlot($userId, $slotId, $itemId) {
-            /** @var $dataDb PDO */
-            $response = new Response();
-
-            if(!$this->_checkItem($userId, $itemId)) {
-                return $response->setCode(Response::CODE_WRONG_DATA)->setError('User don`t have this item');
-            }
-
-            $addResult = $this->addUserItemToSlot($userId, $slotId, $itemId);
-            if($addResult->isError()) {
-                return $addResult;
-            }
-            return $addResult;
-        }
-
-        /**
-         * Добавить предмет
-         * @param int $userId
-         * @param string $slotId
-         * @param string $itemId
-         * @return Response
-         */
-        public function addUserItemToSlot($userId, $slotId, $itemId) {
+        public function equipUserSlot($userId, $slotId, $user_item_id) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -117,16 +95,16 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, slot_id, item_id)
+                    (user_id, slot_id, user_item_id)
                 VALUES
-                    (:user_id, :slot_id, :item_id)
+                    (:user_id, :slot_id, :user_item_id)
                 ON DUPLICATE KEY UPDATE
-                    item_id = :item_id';
+                    user_item_id = :user_item_id';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
                 ':slot_id'      => $slotId,
-                ':item_id'      => $itemId
+                ':user_item_id' => $user_item_id
             ));
 
             $err = $query->errorInfo();
@@ -135,16 +113,5 @@
             }
 
             return $response;
-        }
-
-        /**
-         * @param $userId
-         * @param $itemId
-         * @return bool
-         */
-        private function _checkItem($userId, $itemId)
-        {
-            $result = UserItemModel::getInstance()->getUserItemByUserIdAndItemId($userId, $itemId);
-            return !$result->isError() && $result->getData();
         }
     }

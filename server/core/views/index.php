@@ -62,8 +62,9 @@
         <a href="http://zluki.com/break/server/index.php/user/add?hair_id=1&face_id=1&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Add user</a> |
         <a href="http://zluki.com/break/server/index.php/user/delete?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Delete user</a> |
         <a href="http://zluki.com/break/server/index.php/user/learnStep?energy_spent=100&step_id=indian_step&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Raise step level</a> |
-        <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=t-shirt_yellow&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
-        <a href="http://zluki.com/break/server/index.php/user/equipSlot?slot_id=arms&item_id=t-shirt_yellow&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Equip slot</a> |
+        <a href="http://zluki.com/break/server/index.php/user/buyItem?item_id=jeans_blue&color=blue&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Buy item</a> |
+        <a href="http://zluki.com/break/server/index.php/user/sellItem?user_item_id=270&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Sell item</a> |
+        <a href="http://zluki.com/break/server/index.php/user/equipSlot?slot_id=arms&user_item_id=13&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Equip slot</a> |
         <a href="http://zluki.com/break/server/index.php/user/saveSettings?music=1&sfx=0&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Save settings</a> |
         <a href="http://zluki.com/break/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Send invite</a> |
         <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a>

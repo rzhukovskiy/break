@@ -84,6 +84,6 @@ pvp = {
     },
     sendMessage: function(uid, cid, text, type) {
         var data = '{"type": "' + type + '","message": "' + text + '"}';
-        $.post('http://zluki.com/break/server/index.php/battle/test?viewer_id=' + uid + '&recipient=' + cid, {message: data});
+        $.post('http://zluki.com/break/server/index.php/battle/sendMessage?viewer_id=' + uid + '&recipient=' + cid, {message: data});
     }
 }

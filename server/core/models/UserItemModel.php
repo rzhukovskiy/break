@@ -84,9 +84,10 @@
          * Купить предмет
          * @param int $userId
          * @param string $itemId
+         * @param string $color
          * @return Response
          */
-        public function buyUserItem($userId, $itemId) {
+        public function buyUserItem($userId, $itemId, $color) {
             /** @var $dataDb PDO */
             $response = new Response();
 
@@ -102,18 +103,59 @@
 
             if($item['coins'] > 0) {
                 $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
-                    'coins'  => -1 * $item['coins']
+                    'coins'  => -1 * $item['coins'],
+                    'bucks'  => -1 * $item['bucks']
                 ));
                 if($awardResult->isError()) {
                     return $awardResult;
                 }
             }
 
-            $addResult = $this->addUserItem($userId, $itemId);
+            $addResult = $this->addUserItem($userId, $itemId, $color);
             if($addResult->isError()) {
                 return $addResult;
             }
             $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(),array('item_id'   => $itemId)));
+            return $response;
+        }
+
+        /**
+         * Купить предмет
+         * @param int $userId
+         * @param string $userItemId
+         * @return Response
+         */
+        public function sellUserItem($userId, $userItemId) {
+            /** @var $dataDb PDO */
+            $response = new Response();
+
+            $userItem = UserItemModel::getInstance()->getEntityByEntityId($userItemId);
+            if($userItem->isError()) {
+                return $userItem;
+            }
+            $userItem = $userItem->getData();
+
+            $item = ItemModel::getInstance()->getEntityByEntityId($userItem['item_id']);
+            if($item->isError()) {
+                return $item;
+            }
+            $item = $item->getData();
+
+            if($item['coins'] > 0) {
+                $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
+                    'coins'  => $item['coins'] / 2,
+                    'bucks'  => $item['bucks'] / 2
+                ));
+                if($awardResult->isError()) {
+                    return $awardResult;
+                }
+            }
+
+            $addResult = $this->removeEntityById($userId, $userItemId);
+            if($addResult->isError()) {
+                return $addResult;
+            }
+            $response->setData(UserModel::getInstance()->getEntityByEntityId($userId)->getData());
             return $response;
         }
 
@@ -137,9 +179,10 @@
          * Добавить предмет
          * @param int $userId
          * @param string $itemId
+         * @param string $color
          * @return Response
          */
-        public function addUserItem($userId, $itemId) {
+        public function addUserItem($userId, $itemId, $color = 'no_color') {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -155,15 +198,14 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, item_id, amount, create_date)
+                    (user_id, item_id, color, create_date)
                 VALUES
-                    (:user_id, :item_id, 1, CURRENT_TIMESTAMP)
-                ON DUPLICATE KEY UPDATE
-                    amount = amount + 1';
+                    (:user_id, :item_id, :color, CURRENT_TIMESTAMP)';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
-                ':item_id'      => $itemId
+                ':item_id'      => $itemId,
+                ':color'        => $color
             ));
 
             $err = $query->errorInfo();

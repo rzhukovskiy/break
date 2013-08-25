@@ -98,6 +98,37 @@
         }
 
         /**
+         * Удалить сущность
+         * @param int $userId
+         * @param string $userItemId
+         * @return Response
+         */
+        public function removeEntityById($userId, $userItemId) {
+            /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
+            $response = new Response();
+
+            $sql =
+                'DELETE FROM
+                    ' . $this->_table . '
+                WHERE
+                    id = :id AND
+                    user_id = :user_id';
+            $query = $dataDb->prepare($sql);
+            $query->execute(array(
+                ':user_id'      => $userId,
+                ':id'           => $userItemId
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
+            return $response;
+        }
+
+        /**
          * Получить сущность по ID
          * @param string $list
          * @return Response

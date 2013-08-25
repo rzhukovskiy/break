@@ -143,6 +143,7 @@
                   user
                 SET
                   coins        = coins + :coins,
+                  bucks        = bucks + :bucks,
                   chips        = chips + :chips,
                   energy       = LEAST(energy + :energy, energy_max),
                   energy_max   = energy_max + :energy_max,
@@ -164,6 +165,7 @@
             $query->execute(array(
                 ':user_id'      => $userId,
                 ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
+                ':bucks'        => isset($data['bucks']) ? $data['bucks'] : 0,
                 ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
                 ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,

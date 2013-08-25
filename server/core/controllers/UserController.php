@@ -97,7 +97,14 @@
          * Покупка предмета
          */
         public function buyItemAction() {
-            UserItemModel::getInstance()->buyUserItem($this->getUserId(), $this->getRequest()->getParam('item_id', false))->send();
+            UserItemModel::getInstance()->buyUserItem($this->getUserId(), $this->getRequest()->getParam('item_id', false), $this->getRequest()->getParam('color', 'no_color'))->send();
+        }
+
+        /**
+         * Продажа предмета
+         */
+        public function sellItemAction() {
+            UserItemModel::getInstance()->sellUserItem($this->getUserId(), $this->getRequest()->getParam('user_item_id', false))->send();
         }
 
         /**
@@ -106,7 +113,7 @@
         public function equipSlotAction() {
             UserSlotModel::getInstance()->equipUserSlot($this->getUserId(),
                 $this->getRequest()->getParam('slot_id', false),
-                $this->getRequest()->getParam('item_id', false)
+                $this->getRequest()->getParam('user_item_id', false)
             )->send();
         }
 
