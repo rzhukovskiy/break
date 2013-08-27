@@ -40,27 +40,14 @@ social = {
     },
     /**
      * Покупка внутриигровой валюты за кредиты
-     * @param title - Название валюты
-     * @param description - описание валюты
-     * @param price - цена в кредитах
-     * @param image_url - картинка валюты
-     * @param data - произвольные данныею в нашем случае - id предложения
+     * @param item - ид оффера
      */
-    placeOrder: function(type, title, description, price, image_url, data) {
-        var order_info = {
-            title: title,
-            description: description,
-            price: price,
-            image_url: image_url,
-            product_url: image_url,
-            data: data,
-            purchase_type: type
+    placeOrder: function(item) {
+        var params = {
+            type: 'item',
+            item: item
         };
-        FB.ui({
-            method: 'pay',
-            action: 'buy_item',
-            order_info: order_info
-        }, fb.creditsCallback);
+        VK.callMethod('showOrderBox', params);
     },
     creditsCallback: function(data) {
         if (data['order_id']) {	

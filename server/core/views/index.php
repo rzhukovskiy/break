@@ -47,6 +47,11 @@
             window.onload = (function() {
                 VK.init();
             });
+
+            VK.addCallback('onOrderSuccess', function(order_id) {
+                response = { payment : 'success'};
+                thisMovie("application").sendFromJS( JSON.stringify(response) );
+            });
         </script>
     </head>
 
@@ -67,7 +72,8 @@
         <a href="http://zluki.com/break/server/index.php/user/equipSlot?slot_id=arms&user_item_id=13&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Equip slot</a> |
         <a href="http://zluki.com/break/server/index.php/user/saveSettings?music=1&sfx=0&viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Save settings</a> |
         <a href="http://zluki.com/break/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&auth_key=<?php echo $_REQUEST['auth_key'] ?>" target="_blank">Send invite</a> |
-        <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a>
+        <a href="http://zluki.com/break/server/index.php/xml/load" target="_blank">Parse xmls</a> |
+        <a href="#" onclick="social.placeOrder(1);return false;">Test payments</a>
     </div>
 
     <div id="buttons">

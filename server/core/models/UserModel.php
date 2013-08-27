@@ -198,17 +198,17 @@
          */
         public function giveOffer($userId, $offerId, $credits) {
             $response = new Response();
-            $offer = OfferModel::getInstance()->getOfferByOfferId($offerId);
+            $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
             if($offer->isError()) {
                 return $offer;
             } else {
                 $offer = $offer->getData();
             }
-            if($offer['credits'] != $credits) {
+            if($offer['cost'] != $credits) {
                 $response->setCode(Response::CODE_WRONG_DATA)->setError('Give Offer: wrong credits amount');
             }
 
-            return $this->giveAward($userId, $offer['award_id']);
+            return $this->updateUserByUserId($userId, array('bucks' => $offer['bucks'] + $offer['bonus']));
         }
 
         /**

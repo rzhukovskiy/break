@@ -1,161 +1,142 @@
 <?php
     /**
-     * Контроллер для работы с кредитами фейсбука
+     * Контроллер для работы с голосами вк
      */
     class CreditController extends BaseController {
         /**
-         * Сюда приходит колбэк от фб
+         * Сюда приходит колбэк от вк
          * @return bool
          */
         function paymentAction() {
-            // prepare the return data array
-            $data = array('content' => array());
+            $vkConfig = $this->_globals->getParam('vk');
+            $input = $_POST;
+            // Проверка подписи
+            $sig = $input['sig'];
+            unset($input['sig']);
+            ksort($input);
+            $str = '';
+            foreach ($input as $k => $v) {
+                $str .= $k.'='.$v;
+            }
 
-            // parse signed data
-            $fbParams = $this->_globals->getParam('facebook');
-            $request = $this->parseSignedRequest($_REQUEST['signed_request'], $fbParams['secret']);
+            if ($sig != md5($str . $vkConfig['api_secret'])) {
+                $response['error'] = array(
+                    'error_code' => 10,
+                    'error_msg' => 'Несовпадение вычисленной и переданной подписи запроса.',
+                    'critical' => true
+                );
+            } else {
+                // Подпись правильная
+                switch ($input['notification_type']) {
+                    case 'get_item':
+                        // Получение информации о товаре
+                        $offerId = $input['item']; // ид офера
 
-            if ($request == null)
-                return false;
+                        $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
 
-            $payload = $request['credits'];
+                        if (!$offer->isError()) {
+                            $offer = $offer->getData();
+                            $response['response'] = array(
+                                'item_id' => $offerId,
+                                'title' => ($offer['bucks'] + $offer['bonus']) . ' баксов',
+                                'photo_url' => 'http://somesite/images/coin.jpg',
+                                'price' => $offer['cost']
+                            );
+                        } else {
+                            $response['error'] = array(
+                                'error_code' => 20,
+                                'error_msg' => 'Товара не существует.',
+                                'critical' => true
+                            );
+                        }
+                        break;
 
-            // retrieve all _params passed in
-            $func = $_REQUEST['method'];
-            $order_id = $payload['order_id'];
+                    case 'get_item_test':
+                        // Получение информации о товаре
+                        $offerId = $input['item']; // ид офера
 
-            if ($func == 'payments_status_update') {
-                $status = $payload['status'];
+                        $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
 
-                if ($status == 'placed') {
-                    $order_details = json_decode($payload['order_details'], true);
+                        if (!$offer->isError()) {
+                            $offer = $offer->getData();
+                            $response['response'] = array(
+                                'item_id' => $offerId,
+                                'title' => ($offer['bucks'] + $offer['bonus']) . ' баксов',
+                                'photo_url' => 'http://somesite/images/coin.jpg',
+                                'price' => $offer['cost']
+                            );
+                        } else {
+                            $response['error'] = array(
+                                'error_code' => 20,
+                                'error_msg' => 'Товара не существует.',
+                                'critical' => true
+                            );
+                        }
+                        break;
 
-                    //получаем тип покупки и id предмета
-                    $purchaseData = json_decode($order_details['items'][0]['data'], true);
+                    case 'order_status_change':
+                        // Изменение статуса заказа
+                        if ($input['status'] == 'chargeable') {
+                            $order_id = intval($input['order_id']);
 
-                    $response = new Response();
-                    switch($purchaseData['purchase_type']) {
-                        case 'offer':
-                            $response = UserModel::getInstance()->giveOffer($request['user_id'], $purchaseData['object_id'], $order_details['amount']);
-                            break;
-                        case 'currency':
-                            $response = UserModel::getInstance()->buyCurrency($request['user_id'], $order_details['amount'], $purchaseData['object_id']);
-                            break;
-                        case 'amulet':
-                            $response = UserAmuletModel::getInstance()->buyUserAmuletForCredits($request['user_id'], $purchaseData['object_id'], $order_details['amount']);
-                            break;
-                        case 'chest':
-                            $response = UserChestModel::getInstance()->openChestForKeys($request['user_id'], $purchaseData['object_id'], $order_details['amount']);
-                            break;
-                        default:
-                            $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong purchase type');
-                    }
+                            // Код проверки товара, включая его стоимость
+                            $app_order_id = 1; // Получающийся у вас идентификатор заказа.
 
-                    if($response->isError()) {
-                        $next_state = 'canceled';
-                    } else {
-                        $next_state = 'settled';
-                    }
+                            $offerResult = UserModel::getInstance()->giveOffer($input['receiver_id'], $input['item_id'], $input['item_price']);
+                            if($offerResult->isError()) {
+                                $response['error'] = array(
+                                    'error_code' => 21,
+                                    'error_msg' => 'Неверная цена.',
+                                    'critical' => true
+                                );
+                            } else {
+                                $response['response'] = array(
+                                    'order_id' => $order_id,
+                                    'app_order_id' => $app_order_id,
+                                );
+                            }
+                        } else {
+                            $response['error'] = array(
+                                'error_code' => 100,
+                                'error_msg' => 'Передано непонятно что вместо chargeable.',
+                                'critical' => true
+                            );
+                        }
+                        break;
 
-                    $data['content']['status'] = $next_state;
+                    case 'order_status_change_test':
+                        // Изменение статуса заказа в тестовом режиме
+                        if ($input['status'] == 'chargeable') {
+                            $order_id = intval($input['order_id']);
+
+                            // Код проверки товара, включая его стоимость
+                            $app_order_id = 1; // Получающийся у вас идентификатор заказа.
+
+                            $offerResult = UserModel::getInstance()->giveOffer($input['receiver_id'], $input['item_id'], $input['item_price']);
+
+                            if($offerResult->isError()) {
+                                $response['error'] = array(
+                                    'error_code' => 21,
+                                    'error_msg' => 'Неверная цена.',
+                                    'critical' => true
+                                );
+                            } else {
+                                $response['response'] = array(
+                                    'order_id' => $order_id,
+                                    'app_order_id' => $app_order_id,
+                                );
+                            }
+                        } else {
+                            $response['error'] = array(
+                                'error_code' => 100,
+                                'error_msg' => 'Передано непонятно что вместо chargeable.',
+                                'critical' => true
+                            );
+                        }
+                        break;
                 }
-                // compose returning data array_change_key_case
-                $data['content']['order_id'] = $order_id;
-            }
-            else if ($func == 'payments_get_items') {
-                // remove escape characters
-                $order_info = stripcslashes($payload['order_info']);
-                $item = json_decode($order_info, true);
-
-                $item['price'] = (int)$item['price'];
-                $item['data'] = json_encode(array(
-                    'purchase_type' => $item['purchase_type'],
-                    'object_id'     => $item['data']
-                ));
-
-                // for url fields, if not prefixed by http://, prefix them
-                $url_key = array('product_url', 'image_url');
-                foreach ($url_key as $key)
-                {
-                    if (substr($item[$key], 0, 7) != 'http://')
-                    {
-                        $item[$key] = 'http://'.$item[$key];
-                    }
-                }
-
-                // prefix test-mode
-                if (isset($payload['test_mode']))
-                {
-                    $update_keys = array('title', 'description');
-                    foreach ($update_keys as $key)
-                    {
-                        $item[$key] = '[Test Mode] '.$item[$key];
-                    }
-                }
-                $data['content'] = array($item);
             }
 
-            // required by api_fetch_response()
-            $data['method'] = $func;
-
-            // send data back
-            echo json_encode($data);
-            exit();
-        }
-
-        private function parseSignedRequest($signed_request, $secret)
-        {
-            list($encoded_sig, $payload) = explode('.', $signed_request, 2);
-
-            // decode the data
-            $sig = $this->base64UrlDecode($encoded_sig);
-            $data = json_decode($this->base64UrlDecode($payload), true);
-
-            if (strtoupper($data['algorithm']) !== 'HMAC-SHA256')
-            {
-                //error_log('Unknown algorithm. Expected HMAC-SHA256');
-                return null;
-            }
-
-            // check signature
-            $expected_sig = hash_hmac('sha256', $payload, $secret, $raw = true);
-            if ($sig !== $expected_sig)
-            {
-                //error_log('Bad Signed JSON signature!');
-                return null;
-            }
-
-            return $data;
-        }
-
-        private function base64UrlDecode($input)
-        {
-            return base64_decode(strtr($input, '-_', '+/'));
-        }
-
-        protected function getRemoteData($url)
-        {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $result = curl_exec($ch);
-            curl_close($ch);
-            return json_decode($result, true);
-        }
-
-        protected function postRemoteData($url, $data)
-        {
-            $fields_string = '';
-            foreach($data as $key=>$value) {
-                $fields_string .= $key.'='.$value.'&';
-            }
-            rtrim($fields_string, '&');
-
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST,           true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS,     $fields_string);
-            $result = curl_exec($ch);
-            curl_close($ch);
-            return json_decode($result, true);
+            echo json_encode($response);
         }
     }
