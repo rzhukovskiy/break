@@ -28,6 +28,7 @@
             $response->setData(array(
                 'user'                      => $user->getData(), //пользователь
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
+                'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($this->getUserId())->getData(), //слоты
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
@@ -105,6 +106,20 @@
          */
         public function sellItemAction() {
             UserItemModel::getInstance()->sellUserItem($this->getUserId(), $this->getRequest()->getParam('user_item_id', false))->send();
+        }
+
+        /**
+         * Добавление новинки
+         */
+        public function addNewsAction() {
+            UserNewsModel::getInstance()->addUserNews($this->getUserId(), $this->getRequest()->getParam('item_id', false))->send();
+        }
+
+        /**
+         * Удаление новинок
+         */
+        public function removeNewsAction() {
+            UserNewsModel::getInstance()->removeUserNews($this->getUserId(), $this->getRequest()->getParam('ids', false))->send();
         }
 
         /**

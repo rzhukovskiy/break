@@ -115,12 +115,12 @@
             if($addResult->isError()) {
                 return $addResult;
             }
-            $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(),array('item_id'   => $itemId)));
+            $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(), $addResult->getData()));
             return $response;
         }
 
         /**
-         * Купить предмет
+         * Продать предмет
          * @param int $userId
          * @param string $userItemId
          * @return Response
@@ -213,7 +213,7 @@
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
 
-            return $response;
+            return $response->setData(array('user_item_id' => $dataDb->lastInsertId()));
         }
 
         /**

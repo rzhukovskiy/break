@@ -3,6 +3,8 @@
      * Работа с таблицей offer
      */
     class OfferModel extends BaseModel {
+        protected $_table = 'offer';
+
         /**
          * Создать самого себя
          *
