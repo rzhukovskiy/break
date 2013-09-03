@@ -7,6 +7,10 @@
          * Основная страница
          */
         public function sendMessageAction() {
-            BattleModel::getInstance()->sendMessage($this->getUserId(), $this->getRequest()->getParam('recipient', false), json_decode($this->getRequest()->getParam('message', false), true))->send();
+            $data = array(
+                'type'      => $this->getRequest()->getParam('type', false),
+                'message'   => $this->getRequest()->getParam('message', false)
+            );
+            BattleModel::getInstance()->sendMessage($this->getUserId(), $this->getRequest()->getParam('recipient', false), $data)->send();
         }
     }
