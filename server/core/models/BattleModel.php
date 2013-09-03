@@ -134,7 +134,7 @@
                     }
                     break;
                 case 'invite_send':
-                    if($battleData['phase'] == 'battle' || $battleData['phase'] == 'invite_accept' || $battleData['phase'] == $battleData['phase']) {
+                    if($battleData['phase'] == 'battle' || $battleData['phase'] == 'invite_accept') {
                         return false;
                     }
                     break;
