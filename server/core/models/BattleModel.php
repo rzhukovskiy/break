@@ -26,6 +26,10 @@
                     $battleData['phase'] = 'battle';
                     $battleData['turn']++;
 
+                    if((time() - $battleData['update_time']) < 3) {
+                        return $response->setCode(Response::CODE_ERROR)->setError('Too late');
+                    }
+
                     $turnSteps = explode(',', $data['message']);
                     $stepArray = StepModel::getInstance()->getEntityListByEntityList($turnSteps)->getData();
                     if(count($stepArray) != count($turnSteps)) {
