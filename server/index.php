@@ -40,7 +40,8 @@ $scriptName = $_SERVER['SCRIPT_NAME'];
 
 //костыль по обрезанию index.php
 if(strpos($uri, 'index.php')) {
-    $uri = substr($uri, strlen($scriptName) + 1);
+    $uri = explode('index.php', $uri);
+    $uri = $uri[1];
 } else {
     $uri = '';
 }
