@@ -1,7 +1,7 @@
 <?php
     $config['error_handling'] = true;
     $config['platform']       = 'vk';
-    $config['xml_path']       = '../client/assets/data';
+    $config['xml_path']       = '../client/assets/xml/data';
 
     $config['vk'] = array (
         'app_id'      => '3704573',
@@ -16,7 +16,7 @@
 
     $db = array(
         'user'      => 'root',
-        'password'  => 'sqladm',
+        'password'  => 'BerlinMoscow903',
         'host'      => 'localhost',
         'db_name'   => 'break',
         'driver'    => 'mysql',

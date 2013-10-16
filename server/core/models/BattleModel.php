@@ -116,7 +116,7 @@
         private function _checkMessage($userId, $battleData, $data) {
             switch($data['type']) {
                 case 'timeout':
-                    if($battleData['update_time'] > (time() - 10)) {
+                    if($battleData['update_time'] && $battleData['update_time'] > (time() - 10)) {
                         return false;
                     }
                     break;

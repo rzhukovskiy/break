@@ -77,7 +77,7 @@
     </div>
 
     <div id="buttons">
-        <input type="button" value="Start listening" onclick="pvp.channels.push(new pvp.listener('https://zluki.com/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" />
+        <input type="button" value="Start listening" onclick="pvp.channels.push(new pvp.listener('/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" />
         <input type="button" value="Stop listening" onclick="pvp.channels[0].stop()" /><br />
         To: <input type="text" value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" /><br />
         Type: <input type="text" value="" name="type" id="type" /><br />
