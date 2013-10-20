@@ -1,6 +1,7 @@
 <?php
     $config['error_handling'] = true;
     $config['platform']       = 'vk';
+    $config['base_url']       = 'bb1vs1.ru';
     $config['xml_path']       = '../client/assets/xml/data';
 
     $config['vk'] = array (
@@ -23,7 +24,7 @@
     );
 
     $config['redis_config'] = array(
-        'namespace'         => 'Breakdance_',
+        'namespace'         => '0',
         'serializerAdapter' => 'json',
         'servers'           => array(array(
             'port'          => '6379',

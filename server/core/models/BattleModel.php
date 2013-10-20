@@ -97,7 +97,7 @@
             $ch = curl_init();
             $data_string = json_encode($message);
 
-            curl_setopt($ch, CURLOPT_URL, 'http://zluki.com/pub?cid='.$recipient);
+            curl_setopt($ch, CURLOPT_URL, 'https://' . $this->_globals->getParam('base_url') . '/pub?cid='.$recipient);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

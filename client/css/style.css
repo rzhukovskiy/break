@@ -1,0 +1,48 @@
+/*   
+Project Name: Breakdance: battles 1vs1
+Project URI: https://bb1vs1.ru/
+Version: 1.0
+*/
+
+
+
+
+/* =Reset
+----------------------------------------------- */
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;}
+body { font-size: 14px; line-height: 1.4; }
+body, button, input, select, textarea { font-family:sans-serif; }
+div {display:block;}
+a:focus { outline:thin dotted; }
+a:hover, a:active { outline:0; }
+.hidden { display:none; visibility:hidden; }
+.clearfix:before, .clearfix:after { content:""; display:table; }
+.clearfix:after { clear:both; }
+.clearfix { zoom:1; }
+* {margin:0; padding:0;}
+
+
+
+
+/* =Main
+----------------------------------------------- */
+.start-the-dance {background:black; color:#efc10b; width:810px; height:612px; border:none; overflow:hidden;}
+
+.go-down {width:810px; height:108px; clear:both; overflow:hidden; position:relative;}
+.go-down ul {display:block; clear:both; width:810px; height:54px; overflow:hidden; background:black url(../img/menu-sprite.png) no-repeat;}
+.go-down li, .go-down li  a {display:block; float:left; width:270px;}
+.go-down li  a {height:54px;}
+.go-down li  a:hover {background-image:url(../img/menu-sprite.png);}
+.go-down .one a:hover	{background-position:left bottom;}
+.go-down .two a:hover	{background-position:center bottom;}
+.go-down .three a:hover	{background-position:right bottom;}
+
+#vk_like {margin-left:18px; margin-top:16px;}
+.user-id {position:absolute; right:18px; top:72px; width:180px; height:18px; font:bold 12px/18px Arial, Helvetica, sans-serif; text-align:right; color:#909090;}
+
+.dev {width:774px; clear:both; padding:18px; color:#45688E; background-color:#DEE5EB; line-height:18px;  font:normal 12px/24px Arial, Helvetica, sans-serif;}
+.dev input {border:1px solid #C0CAD5; background:white; margin-top:9px; padding:0 3px; height:24px;}
+.dev input[type="button"] { border:2px solid #DEE5EB; height:28px; margin-right:9px; padding:0 6px; background:black; color:#ffce0c; font-weight:bold;}
+.dev input:hover[type="button"] {cursor: pointer; border:2px solid black;}
+.dev a {color:#2B587A; padding:3px;}
+.dev a:hover {background:#efc10b; color:black;}

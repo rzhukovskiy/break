@@ -4,7 +4,7 @@
      */
     class RedisModel {
         /** @var Globals */
-        private $_globals = null;
+        protected $_globals = null;
         /** @var array */
         private $_gameSettings = null;
 
