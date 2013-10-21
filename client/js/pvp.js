@@ -83,6 +83,6 @@ pvp = {
         this.listener.stop();
     },
     sendMessage: function(uid, cid, text, type) {
-        $.post('/server/index.php/battle/sendMessage?viewer_id=' + uid + '&recipient=' + cid, {type: type});
+        $.post('/server/index.php/battle/sendMessage?viewer_id=' + uid + '&recipient=' + cid, {type: type, message: text});
     }
 }

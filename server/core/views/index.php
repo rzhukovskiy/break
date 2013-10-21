@@ -65,9 +65,9 @@
 
     <div class="go-down">
         <ul>
-            <li class="one"><a href="https://vk.com/topic-53801954_28101181" title=""></a></li>
-            <li class="two"><a href="https://vk.com/bb1vs1" title=""></a></li>
-            <li class="three"><a href="http://vk.com/topic-53801954_28101182" title=""></a></li>
+            <li class="one"><a target="_blank" href="https://vk.com/topic-53801954_28101181" title=""></a></li>
+			<li class="two"><a target="_blank" href="https://vk.com/bb1vs1" title=""></a></li>
+			<li class="three"><a target="_blank" href="https://vk.com/topic-53801954_28101182" title=""></a></li>
         </ul>
         <div id="vk_like"></div>
         <script type="text/javascript">VK.Widgets.Like("vk_like", {type: "button"});</script>

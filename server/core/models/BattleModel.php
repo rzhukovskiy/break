@@ -32,6 +32,7 @@
 
                     $turnSteps = explode(',', $data['message']);
                     $stepArray = StepModel::getInstance()->getEntityListByEntityList($turnSteps)->getData();
+                    
                     if(count($stepArray) != count($turnSteps)) {
                         return $response->setCode(Response::CODE_ERROR)->setError('Not existing steps');
                     }
@@ -45,7 +46,7 @@
                         if(!isset($userStepArray[$step['id']])) {
                             return $response->setCode(Response::CODE_ERROR)->setError('User don`t have such steps');
                         }
-                        $scores += $step['mastery_points_'.$userStepArray[$step['id']]] * $multiplier;
+                        $scores += $step['mastery_points_'.($userStepArray[$step['id']] + 1)] * $multiplier;
                     }
 
                     $userData =  array('stamina' => -$sumStamina);

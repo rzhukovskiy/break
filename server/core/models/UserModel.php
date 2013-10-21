@@ -317,8 +317,8 @@
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  stamina = stamina + LEAST((TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - stamina),
-                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(MINUTE, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time MINUTE)
+                  stamina = stamina + LEAST((TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - stamina),
+                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time SECOND)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
