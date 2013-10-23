@@ -43,6 +43,18 @@
             return $this->_globals->getRediska();
         }
 
+        protected function addToSet($key, $member) {
+            return $this->getDataBase()->existsInSet($key, $member) || $this->getDataBase()->addToSet($key, $member);
+        }
+
+        protected function deleteFromSet($key, $member) {
+            return !$this->getDataBase()->existsInSet($key, $member) || $this->getDataBase()->deleteFromSet($key, $member);
+        }
+
+        protected function getSetByKey($key) {
+            return $this->getDataBase()->getSet($key);
+        }
+
         protected function getValueByKey($key) {
             return $this->getDataBase()->get($key);
         }

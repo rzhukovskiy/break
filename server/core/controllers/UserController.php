@@ -24,9 +24,12 @@
                 $user->send();
             }
 
+            BattleModel::getInstance()->addOnlineUser($this->getUserId());
+
             $response = new Response();
             $response->setData(array(
                 'user'                      => $user->getData(), //пользователь
+                'online_user_list'          => BattleModel::getInstance()->getOnlineUsers()->getData(), //юзеры онлайн
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
@@ -35,6 +38,13 @@
                 'user_request_from_list'    => RequestModel::getInstance()->getRequestListByUserFromId($this->getUserId())->getData(), //запросы
                 'user_request_to_list'      => RequestModel::getInstance()->getRequestListByUserToId($this->getUserId())->getData(), //запросы
             ))->send();
+        }
+
+        /**
+         * Запрос на удаление юзера из списков онлайн-игроков
+         */
+        public function removeOnlineUserAction() {
+            BattleModel::getInstance()->removeOnlineUser($this->getUserId())->send();
         }
 
         /**

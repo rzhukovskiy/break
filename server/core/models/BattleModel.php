@@ -10,7 +10,22 @@
             return parent::getInstance();
         }
 
-        public function sendMessage($userId, $recipient, $data) {
+        public function getOnlineUsers() {
+            $response = new Response();
+            $response->setData($this->getSetByKey('online'));
+
+            return $response;
+        }
+
+        public function addOnlineUser($userId) {
+            $this->addToSet('online', $userId);
+        }
+
+        public function removeOnlineUser($userId) {
+            $this->deleteFromSet('online', $userId);
+        }
+
+        public function sendBattleMessage($userId, $recipient, $data) {
             $response = new Response();
             $data['user_id'] = $userId;
 
@@ -58,8 +73,7 @@
                         $battleData['phase'] = 'finish';
                     }
                     $battleData['last_scores'] = $scores;
-                    array_push($battleData['steps'], array_diff($turnSteps, $battleData['steps']));
-
+                    $battleData['steps'] = array_merge($battleData['steps'], array_diff($turnSteps, $battleData['steps']));
                     $updateResult = UserModel::getInstance()->updateUserByUserId($userId, $userData);
 
                     if($updateResult->isError()) {

@@ -49,6 +49,13 @@
                 VK.init();
             });
 
+            $(window).bind(
+                "beforeunload",
+                function() {
+                    $.get('/server/index.php/user/removeOnlineUser?viewer_id=' + flashvars.uid + '&auth_key=' + flashvars.auth_key);
+                }
+            )
+
             VK.addCallback('onOrderSuccess', function(order_id) {
                 response = { payment : 'success'};
                 thisMovie("application").sendFromJS( JSON.stringify(response) );
