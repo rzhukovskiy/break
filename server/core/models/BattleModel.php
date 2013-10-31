@@ -33,24 +33,25 @@
 
             $battleData = $this->_getBattleData($battleId);
 
-            if(!$this->_checkMessage($userId, $battleData, $data)) {
+            /*if(!$this->_checkMessage($userId, $battleData, $data)) {
                 return $response->setCode(Response::CODE_ERROR)->setError('Wrong message');
-            }
+            }*/
+            $data['timestamp'] = $battleData['update_time'];
             switch($data['type']) {
                 case 'turn':
                     $battleData['phase'] = 'battle';
                     $data['turn'] = ++$battleData['turn'];
 
-                    if((time() - $battleData['update_time']) < 3) {
-                        return $response->setCode(Response::CODE_ERROR)->setError('Too late');
-                    }
+                    /*if((time() - $battleData['update_time']) < 3) {
+                        return $response->setCode(Response::CODE_ERROR)->setError('Too fast');
+                    }*/
 
-                    $turnSteps = array_unique(explode(',', $data['message']));
+                    $turnSteps = array_unique($data['message']['steps']);
                     $stepArray = StepModel::getInstance()->getEntityListByEntityList($turnSteps)->getData();
                     
-                    if(count($stepArray) != count($turnSteps)) {
+                    /*if(count($stepArray) != count($turnSteps)) {
                         return $response->setCode(Response::CODE_ERROR)->setError('Not existing steps');
-                    }
+                    }*/
                     $userStepArray = UserStepModel::getInstance()->getUserStepPairsListByUserId($userId)->getData();
 
                     $sumStamina = 0;
@@ -58,20 +59,20 @@
                     foreach($stepArray as $step) {
                         $multiplier = in_array($step['id'], $battleData['steps']) ? 0.5 : 1;
                         $sumStamina += $step['stamina'];
-                        if(!isset($userStepArray[$step['id']])) {
+                        /*if(!isset($userStepArray[$step['id']])) {
                             return $response->setCode(Response::CODE_ERROR)->setError('User don`t have such steps');
-                        }
+                        }*/
                         $scores += $step['mastery_points_'.($userStepArray[$step['id']] + 1)] * $multiplier;
                     }
 
                     $userData =  array('stamina' => -$sumStamina);
 
-                    if(!($battleData['turn'] % 2) && $scores != $battleData['last_scores']) {
+                    /*if(!($battleData['turn'] % 2) && $scores != $battleData['last_scores']) {
                         $userData['battles']    = 1;
                         $userData['wins']       = $scores > $battleData['last_scores'] ? 1 : 0;
 
                         $battleData['phase'] = 'finish';
-                    }
+                    }*/
                     $battleData['last_scores'] = $scores;
                     $battleData['steps'] = array_merge($battleData['steps'], array_diff($turnSteps, $battleData['steps']));
                     $updateResult = UserModel::getInstance()->updateUserByUserId($userId, $userData);
@@ -131,7 +132,7 @@
         private function _checkMessage($userId, $battleData, $data) {
             switch($data['type']) {
                 case 'timeout':
-                    if($battleData['update_time'] && $battleData['update_time'] > (time() - 10)) {
+                    if(!$battleData['update_time'] && $battleData['update_time'] > (time() - 10)) {
                         return false;
                     }
                     break;
@@ -146,9 +147,8 @@
 
                     $userData = UserModel::getInstance()->getEntityByEntityId($userId)->getData();
                     $levelData = LevelModel::getInstance()->getEntityByEntityId($userData['level'])->getData();
-                    $steps = explode(',', $data['message']);
 
-                    if(count($steps) > $levelData['max_moves']) {
+                    if(count($data['message']['steps']) > $levelData['max_moves']) {
                         return false;
                     }
                     break;
