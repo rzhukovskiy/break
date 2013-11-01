@@ -33,6 +33,7 @@
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
+                'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
                 'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($this->getUserId())->getData(), //слоты
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
                 'user_request_from_list'    => RequestModel::getInstance()->getRequestListByUserFromId($this->getUserId())->getData(), //запросы
@@ -53,6 +54,25 @@
         public function getListAction() {
             $userModel = UserModel::getInstance();
             $userModel->getUserListByIds($this->getRequest()->getParam('uids', false))->send();
+        }
+
+        /**
+         * Сохранение очков пользователя
+         */
+        public function saveUserScoresAction() {
+            $gameId = $this->getRequest()->getParam('game_id', false);
+            $scores = $this->getRequest()->getParam('scores', 0);
+
+            UserScoresModel::getInstance()->saveUserScores($this->getUserId(), $gameId, $scores)->send();
+        }
+
+        /**
+         * Сохранение очков пользователя
+         */
+        public function getTopUsersAction() {
+            $amount = $this->getRequest()->getParam('amount', 10);
+
+            UserScoresModel::getInstance()->getTopUserList($amount)->send();
         }
 
         /**
