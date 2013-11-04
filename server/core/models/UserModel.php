@@ -15,6 +15,28 @@
         }
 
         /**
+         * Проверить занятость nickname
+         * @param string $nickname
+         * @return Response
+         */
+        public function checkNickname($nickname) {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT * FROM ' . $this->_table . ' WHERE nickname = :nickname';
+            $query = $gameDb->prepare($sql);
+            $query->execute(array(':nickname' => $nickname));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                return false;
+            } else {
+                return $query->rowCount() > 0;
+            }
+        }
+
+        /**
          * Получить список пользователей по ID
          * @param string $ids
          * @return Response
@@ -404,18 +426,24 @@
          * @param $userId int
          * @param $faceId int
          * @param $hairId int
+         * @param $nickname string
          * @return Response
          */
-        public function addUserByUserId($userId, $faceId, $hairId) {
+        public function addUserByUserId($userId, $faceId, $hairId, $nickname) {
             $settings = $this->getSettingList();
             /** @var $db PDO */
             $db = $this->getDataBase();
             $response = new Response();
 
+            if(!$this->checkNickname($nickname)){
+                $response->setCode(Response::CODE_ERROR)->setError('nickname_exist');
+            }
+
             $sql = 'INSERT INTO ' . $this->_table . '
                    (id,
                     face_id,
                     hair_id,
+                    nickname,
                     level,
                     energy,
                     energy_spent,
@@ -436,6 +464,7 @@
                    (:user_id,
                     :face_id,
                     :hair_id,
+                    :nickname,
                     1,
                     :energy,
                     0,
@@ -457,6 +486,7 @@
                 ':user_id'      => $userId,
                 ':face_id'      => $faceId,
                 ':hair_id'      => $hairId,
+                ':nickname'     => $nickname,
                 ':energy'       => $settings['energy_max'],
                 ':energy_max'   => $settings['energy_max'],
                 ':stamina'      => $settings['stamina_max'],
