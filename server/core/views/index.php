@@ -81,7 +81,7 @@
         <div class="user-id">ID: <?php echo $_REQUEST['viewer_id'] ?></div>
     </div>
 
-    <?php if($_REQUEST['viewer_id'] == 1 || $_REQUEST['viewer_id'] == 812177) { ?>
+    <?php if($_REQUEST['viewer_id'] == 1 || $_REQUEST['viewer_id'] == 812177 || $_REQUEST['viewer_id'] == 6489966 || $_REQUEST['viewer_id'] == 5201313) { ?>
         <!-- DEV -->
         <div class="dev">
             <div class="tests">
