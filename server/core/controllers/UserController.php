@@ -60,6 +60,7 @@
                 $userList[$id] =  array(
                     'user'                      => UserModel::getInstance()->getEntityByEntityId($id)->getData(), //пользователь
                     'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($id)->getData(), //очки
+                    'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($id)->getData(), //предметы
                     'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($id)->getData(), //слоты
                 );
             }
