@@ -86,7 +86,17 @@
             $amount = $this->getRequest()->getParam('amount', 10);
             $days = $this->getRequest()->getParam('days', 1);
 
-            UserScoresModel::getInstance()->getTopUserList($amount, $days)->send();
+            $ids = UserScoresModel::getInstance()->getTopUserList($amount, $days)->getData();
+
+            foreach($ids as &$id) {
+                $id['user']                      = UserModel::getInstance()->getEntityByEntityId($id['user_id'])->getData();
+                $id['user_scores_list']          = UserScoresModel::getInstance()->getUserScoresListByUserId($id['user_id'])->getData();
+                $id['user_item_list']            = UserItemModel::getInstance()->getUserItemListByUserId($id['user_id'])->getData();
+                $id['user_slot_list']            = UserSlotModel::getInstance()->getUserSlotListByUserId($id['user_id'])->getData();
+            }
+
+            $response = new Response();
+            $response->setData($ids)->send();
         }
 
         /**
