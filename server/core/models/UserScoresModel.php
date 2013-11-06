@@ -83,9 +83,10 @@
         /**
          * Получение топа
          * @param int $amount
+         * @param int $days
          * @return Response
          */
-        public function getTopUserList($amount) {
+        public function getTopUserList($amount, $days = 1) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -95,10 +96,14 @@
                     *
                 FROM
                     ' . $this->_table . '
+                WHERE
+                     modify_date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :days DAY)
                 ORDER BY
                     scores DESC
-                LIMIT ' . $amount;
+                LIMIT :amount';
             $query = $dataDb->prepare($sql);
+            $query->bindValue(':amount', (int)$amount, PDO::PARAM_INT);
+            $query->bindValue(':days', $days, PDO::PARAM_INT);
             $query->execute();
 
             $err = $query->errorInfo();

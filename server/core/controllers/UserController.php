@@ -45,15 +45,27 @@
          * Запрос на удаление юзера из списков онлайн-игроков
          */
         public function removeOnlineUserAction() {
-            BattleModel::getInstance()->removeOnlineUser($this->getUserId())->send();
+            BattleModel::getInstance()->removeOnlineUser($this->getUserId());
         }
 
         /**
          * Запрос всех данных о списке пользователей
          */
         public function getListAction() {
-            $userModel = UserModel::getInstance();
-            $userModel->getUserListByIds($this->getRequest()->getParam('uids', false))->send();
+            $ids = $this->getRequest()->getParam('uids', false);
+            $ids = array_map('intval', explode(',', $ids));
+
+            $userList = array();
+            foreach($ids as $id) {
+                $userList[$id] =  array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($id)->getData(), //пользователь
+                    'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($id)->getData(), //очки
+                    'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($id)->getData(), //слоты
+                );
+            }
+
+            $response = new Response();
+            $response->setData($userList)->send();
         }
 
         /**
@@ -71,8 +83,9 @@
          */
         public function getTopUsersAction() {
             $amount = $this->getRequest()->getParam('amount', 10);
+            $days = $this->getRequest()->getParam('days', 1);
 
-            UserScoresModel::getInstance()->getTopUserList($amount)->send();
+            UserScoresModel::getInstance()->getTopUserList($amount, $days)->send();
         }
 
         /**
@@ -81,8 +94,9 @@
         public function addAction() {
             $faceId = $this->getRequest()->getParam('face_id', 1);
             $hairId = $this->getRequest()->getParam('hair_id', 1);
+            $nickname = $this->getRequest()->getParam('nickname', $this->getUserId());
 
-            UserModel::getInstance()->addUserByUserId($this->getUserId(), $faceId, $hairId)->send();
+            UserModel::getInstance()->addUserByUserId($this->getUserId(), $faceId, $hairId, $nickname)->send();
         }
 
         /**
