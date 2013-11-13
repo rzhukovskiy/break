@@ -23,6 +23,31 @@ social = {
         });
     },
     /**
+     * Получить альбомы
+     */
+    getAlbums:function() {
+        VK.api("photos.getAlbums", {}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+            console.log(response);
+        });
+    },
+    /**
+     * Создать альбом
+     */
+    createAlbum:function(title, description) {
+        VK.api("photos.createAlbum", {title: title, description: description, test_mode: 1}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    /**
+     * Получить сервер
+     */
+    getServer:function(album_id) {
+        VK.api("photos.getUploadServer", {album_id: album_id, test_mode: 1}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    /**
      * Список всех друзей
      */
     getAllFriends:function() {

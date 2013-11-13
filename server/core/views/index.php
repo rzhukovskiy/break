@@ -95,7 +95,8 @@
                 <a href="/server/index.php/user/saveSettings?music=1&amp;sfx=0&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Save settings</a> |
                 <a href="/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Send invite</a> |
                 <a href="/server/index.php/xml/load" target="_blank">Parse xmls</a> |
-                <a href="#" onclick="social.placeOrder(1);return false;">Test payments</a>
+                <a href="#" onclick="social.placeOrder(1);return false;">Test payments</a> |
+                <a href="#" onclick="social.getAlbums();return false;">Get Albums</a>
             </div>
 
             <div id="buttons">
