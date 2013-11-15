@@ -48,6 +48,14 @@ social = {
         });
     },
     /**
+     * Сохранить фото
+     */
+    savePhoto:function(album_id, server, photos_list, hash) {
+        VK.api(" photos.save", {album_id: album_id, server: server, photos_list: photos_list, hash: hash, test_mode: 1}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    /**
      * Список всех друзей
      */
     getAllFriends:function() {

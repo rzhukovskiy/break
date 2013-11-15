@@ -39,7 +39,7 @@
             var attributes = { id: "application", name: "application" };
             swfobject.embedSWF(
                     "../client/Main.swf?"+Math.floor(Math.random()*65535),
-                    "altContent", "810", "615", "11.4.0",
+                    "altContent", "810", "675", "11.4.0",
                     false,
                     flashvars, params, attributes);
 
@@ -71,48 +71,10 @@
     </div>
 
     <div class="go-down">
-        <ul>
-            <li class="one"><a target="_blank" href="https://vk.com/topic-53801954_28101181" title=""></a></li>
-			<li class="two"><a target="_blank" href="https://vk.com/bb1vs1" title=""></a></li>
-			<li class="three"><a target="_blank" href="https://vk.com/topic-53801954_28101182" title=""></a></li>
-        </ul>
         <div id="vk_like"></div>
         <script type="text/javascript">VK.Widgets.Like("vk_like", {type: "button"});</script>
         <div class="user-id">ID: <?php echo $_REQUEST['viewer_id'] ?></div>
     </div>
-
-    <?php if($_REQUEST['viewer_id'] == 1 || $_REQUEST['viewer_id'] == 812177 || $_REQUEST['viewer_id'] == 6489966 || $_REQUEST['viewer_id'] == 5201313) { ?>
-        <!-- DEV -->
-        <div class="dev">
-            <div class="tests">
-                <a href="/server/index.php/user/get?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Get user</a> |
-                <a href="/server/index.php/user/add?hair_id=1&amp;face_id=1&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Add user</a> |
-                <a href="/server/index.php/user/delete?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Delete user</a> |
-                <a href="/server/index.php/user/learnStep?energy_spent=100&amp;step_id=indian_step&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Raise step level</a> |
-                <a href="/server/index.php/user/buyItem?item_id=jeans_blue&amp;color=blue&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Buy item</a> |
-                <a href="/server/index.php/user/sellItem?user_item_id=270&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Sell item</a> |
-                <a href="/server/index.php/user/equipSlot?slot_id=arms&amp;user_item_id=13&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Equip slot</a> |
-                <a href="/server/index.php/user/saveSettings?music=1&amp;sfx=0&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Save settings</a> |
-                <a href="/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Send invite</a> |
-                <a href="/server/index.php/xml/load" target="_blank">Parse xmls</a> |
-                <a href="#" onclick="social.placeOrder(1);return false;">Test payments</a> |
-                <a href="#" onclick="social.getAlbums();return false;">Get Albums</a>
-            </div>
-
-            <div id="buttons">
-                <input value="Start listening" onclick="pvp.channels.push(new pvp.listener('/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" type="button">
-                <input value="Stop listening" onclick="pvp.channels[0].stop()" type="button"><br>
-                To: <input value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" type="text"><br>
-                Type: <input value="" name="type" id="type" type="text"><br>
-                Message: <input value="Hello" name="text" id="text" type="text">
-                <input value="Send hello" onclick="pvp.sendMessage(<?php echo $_REQUEST['viewer_id'] ?>, $('#cid').val(), $('#text').val(), $('#type').val())" type="button">
-            </div>
-
-            <div id="messages">
-            </div>
-        </div>
-        <!-- /DEV -->
-    <?php } ?>
 
     <script type="text/javascript">
 
@@ -127,5 +89,38 @@
         })();
 
     </script>
+
+    <?php if($_REQUEST['viewer_id'] == 1 || $_REQUEST['viewer_id'] == 812177 || $_REQUEST['viewer_id'] == 6489966 || $_REQUEST['viewer_id'] == 5201313) { ?>
+    <!-- DEV -->
+    <div class="dev">
+        <div class="tests">
+            <a href="/server/index.php/user/get?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Get user</a> |
+            <a href="/server/index.php/user/add?hair_id=1&amp;face_id=1&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Add user</a> |
+            <a href="/server/index.php/user/delete?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Delete user</a> |
+            <a href="/server/index.php/user/learnStep?energy_spent=100&amp;step_id=indian_step&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Raise step level</a> |
+            <a href="/server/index.php/user/buyItem?item_id=jeans_blue&amp;color=blue&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Buy item</a> |
+            <a href="/server/index.php/user/sellItem?user_item_id=270&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Sell item</a> |
+            <a href="/server/index.php/user/equipSlot?slot_id=arms&amp;user_item_id=13&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Equip slot</a> |
+            <a href="/server/index.php/user/saveSettings?music=1&amp;sfx=0&amp;viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Save settings</a> |
+            <a href="/server/index.php/battle/test?viewer_id=<?php echo $_REQUEST['viewer_id'] ?>&amp;auth_key=198a038c272bdab32fa5e0fc9a3314ef" target="_blank">Send invite</a> |
+            <a href="/server/index.php/xml/load" target="_blank">Parse xmls</a> |
+            <a href="#" onclick="social.placeOrder(1);return false;">Test payments</a> |
+            <a href="#" onclick="social.getAlbums();return false;">Get Albums</a>
+        </div>
+
+        <div id="buttons">
+            <input value="Start listening" onclick="pvp.channels.push(new pvp.listener('/sub?cid=<?php echo $_REQUEST['viewer_id'] ?>', pvp.onSuccess, pvp.onError));" type="button">
+            <input value="Stop listening" onclick="pvp.channels[0].stop()" type="button"><br>
+            To: <input value="<?php echo $_REQUEST['viewer_id'] ?>" name="cid" id="cid" type="text"><br>
+            Type: <input value="" name="type" id="type" type="text"><br>
+            Message: <input value="Hello" name="text" id="text" type="text">
+            <input value="Send hello" onclick="pvp.sendMessage(<?php echo $_REQUEST['viewer_id'] ?>, $('#cid').val(), $('#text').val(), $('#type').val())" type="button">
+        </div>
+
+        <div id="messages">
+        </div>
+    </div>
+    <!-- /DEV -->
+    <?php } ?>
 </body>
 </html>

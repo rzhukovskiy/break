@@ -27,16 +27,7 @@ a:hover, a:active { outline:0; }
 /* =Main
 ----------------------------------------------- */
 body {background:white;}
-object {background:black; display:block; color:#efc10b; width:810px; height:612px; border:none; overflow:hidden;}
-
-.go-down {width:810px; height:108px; clear:both; overflow:hidden; position:relative;}
-.go-down ul {display:block; clear:both; width:810px; height:54px; overflow:hidden; background:black url(../img/menu-sprite.png) no-repeat;}
-.go-down li, .go-down li  a {display:block; float:left; width:270px;}
-.go-down li  a {height:54px;}
-.go-down li  a:hover {background-image:url(../img/menu-sprite.png);}
-.go-down .one a:hover	{background-position:left bottom;}
-.go-down .two a:hover	{background-position:center bottom;}
-.go-down .three a:hover	{background-position:right bottom;}
-
+object {background:black; display:block; color:#efc10b; width:810px; height:675px; border:none; overflow:hidden;}
+.go-down {width:810px; height:54px; clear:both; overflow:hidden; position:relative;}
+.user-id {position:absolute; right:18px; top:18px; width:180px; height:18px; font:bold 12px/18px Arial, Helvetica, sans-serif; text-align:right; color:#909090;}
 #vk_like {margin-left:18px; margin-top:16px;}
-.user-id {position:absolute; right:18px; top:72px; width:180px; height:18px; font:bold 12px/18px Arial, Helvetica, sans-serif; text-align:right; color:#909090;}
