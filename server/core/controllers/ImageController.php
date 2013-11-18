@@ -25,6 +25,6 @@
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_POSTFIELDS, array('file1' => '@' . $fullFilePath));
-            $response->setData(array('result' => curl_exec($curl)))->send();
+            echo curl_exec($curl);
         }
     }
