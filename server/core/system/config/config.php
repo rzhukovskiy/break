@@ -16,18 +16,9 @@
     $config['test_mode_user']           = 1;
 
     $db = array(
-        'user'      => 'root',
-        'password'  => 'BerlinMoscow903',
+        'user'      => 'db',
+        'password'  => 'PogodaTech738',
         'host'      => 'localhost',
         'db_name'   => 'break',
         'driver'    => 'mysql',
-    );
-
-    $config['redis_config'] = array(
-        'namespace'         => '0',
-        'serializerAdapter' => 'json',
-        'servers'           => array(array(
-            'port'          => '6379',
-            'host'          => '127.0.0.1',
-        ))
     );

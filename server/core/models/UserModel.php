@@ -234,6 +234,33 @@
         }
 
         /**
+         * Выдаем пользователю плюхи за победу
+         * @param int $userId
+         * @param int $bet
+         * @param int $opponent
+         * @return Response
+         */
+        public function battleWin($userId, $bet, $opponent) {
+            $result = new Response();
+            $winResult = $this->updateUserByUserId($userId, array(
+                'coins' => $bet,
+                'wins'  => 1));
+
+            if($winResult->isError()) {
+                return $winResult;
+            }
+
+            $looseResult = $this->updateUserByUserId($opponent, array(
+                'coins' => -1 * $bet));
+
+            if($looseResult->isError()) {
+                return $looseResult;
+            }
+
+            return $result;
+        }
+
+        /**
          * Меняем валюту
          * @param int $userId
          * @param int $credits
