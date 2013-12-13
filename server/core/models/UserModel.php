@@ -205,7 +205,7 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-            if($query->rowCount() < 1) {
+            if($query->rowCount() < 1) {print_r($data);die;
                 $response->setCode(Response::CODE_WRONG_DATA)->setError('Not enough resources');
             }
             return $response;
@@ -241,7 +241,6 @@
          * @return Response
          */
         public function battleWin($userId, $bet, $opponent) {
-            $result = new Response();
             $winResult = $this->updateUserByUserId($userId, array(
                 'coins' => $bet,
                 'wins'  => 1));
@@ -250,14 +249,16 @@
                 return $winResult;
             }
 
-            $looseResult = $this->updateUserByUserId($opponent, array(
-                'coins' => -1 * $bet));
+            if($bet) {
+                $looseResult = $this->updateUserByUserId($opponent, array(
+                    'coins' => -1 * $bet));
 
-            if($looseResult->isError()) {
-                return $looseResult;
+                if($looseResult->isError()) {
+                    return $looseResult;
+                }
             }
 
-            return $result;
+            return $this->getEntityByEntityId($userId);
         }
 
         /**
