@@ -205,7 +205,7 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-            if($query->rowCount() < 1) {print_r($data);die;
+            if($query->rowCount() < 1) {
                 $response->setCode(Response::CODE_WRONG_DATA)->setError('Not enough resources');
             }
             return $response;
