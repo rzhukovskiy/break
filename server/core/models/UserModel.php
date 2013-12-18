@@ -61,6 +61,7 @@
         }
 
         private function _raiseUserLevel($userId, $energySpent, $wins) {
+            $settings = $this->getSettingList();
             $response = new Response();
             $user = $this->getEntityByEntityId($userId);
             if($user->isError()) {
@@ -74,23 +75,33 @@
             }
             $level = $level->getData();
 
+            $data = array();
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
                 $awardResult = $this->giveAward($userId, $level['award']);
                 if($awardResult->isError()) {
                     return $awardResult;
                 }
-                $response->setData(array(
+                $data = array(
                     'energy_spent' => $user['energy_spent'] + $energySpent - $level['energy'],
                     'stamina_max'  => $level['stamina_max'] - $user['stamina_max'],
+                    'row_wins'     => $wins,
                     'level'        => 1
-                ));
+                );
             } else {
-                $response->setData(array(
+                $data = array(
                     'energy_spent' => $user['energy_spent'] + $energySpent,
                     'stamina_max'  => 0,
+                    'row_wins'     => $wins,
                     'level'        => 0
-                ));
+                );
             }
+
+            if(($user['row_wins'] + $wins) >= $settings['numWinsInRow']) {
+                $this->giveAward($userId, $settings['awardWinsInRow']);
+                $data['row_wins'] = -1;
+            }
+
+            $response->setData($data);
             return $response;
         }
 
@@ -146,6 +157,7 @@
 
             $energySpent = isset($data['energy_spent']) ? $data['energy_spent'] : 0;
             $wins        = isset($data['wins']) ? $data['wins'] : 0;
+            $rowWins =   isset($data['row_wins']) ? $data['row_wins'] : 0;
             $staminaMax  = 0;
             $level       = 0;
             if($wins || $energySpent) {
@@ -158,7 +170,24 @@
                 $energySpent = $newData['energy_spent'];
                 $staminaMax  = $newData['stamina_max'];
                 $level       = $newData['level'];
+                $rowWins = $newData['row_wins'];
             }
+
+            $updateData = array(
+                ':user_id'      => $userId,
+                ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
+                ':bucks'        => isset($data['bucks']) ? $data['bucks'] : 0,
+                ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
+                ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
+                ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
+                ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
+                ':stamina_max'  => $staminaMax,
+                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
+                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
+                ':wins'         => $wins,
+                ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
+                ':level'        => $level
+            );
 
             $sql =
                 'UPDATE
@@ -172,9 +201,17 @@
                   stamina      = LEAST(stamina + :stamina, stamina_max),
                   stamina_max  = stamina_max + :stamina_max,
                   energy_time  = energy_time + (:energy_time * energy_time) / 100,
-                  stamina_time = stamina_time + (:stamina_time * stamina_time) / 100,
-                  energy_spent = :energy_spent,
-                  wins         = wins + :wins,
+                  stamina_time = stamina_time + (:stamina_time * stamina_time) / 100, ';
+            if($energySpent) {
+                $sql .= 'energy_spent = :energy_spent, ';
+                $updateData[':energy_spent'] = $energySpent;
+            }
+            if($rowWins >=0 ) {
+                $sql .= 'row_wins = row_wins + :wins, ';
+            } else {
+                $sql .= 'row_wins = 0, ';
+            }
+            $sql .= 'wins         = wins + :wins,
                   battles      = battles + :battles,
                   level        = level + :level
                 WHERE
@@ -184,29 +221,11 @@
                   stamina + :stamina >= 0 AND
                   energy + :energy >= 0';
             $query = $db->prepare($sql);
-            $query->execute(array(
-                ':user_id'      => $userId,
-                ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
-                ':bucks'        => isset($data['bucks']) ? $data['bucks'] : 0,
-                ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
-                ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
-                ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
-                ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
-                ':stamina_max'  => $staminaMax,
-                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
-                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
-                ':energy_spent' => $energySpent,
-                ':wins'         => $wins,
-                ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
-                ':level'        => $level
-            ));
+            $query->execute($updateData);
 
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
-            }
-            if($query->rowCount() < 1) {
-                $response->setCode(Response::CODE_WRONG_DATA)->setError('Not enough resources');
             }
             return $response;
         }
@@ -242,16 +261,20 @@
          */
         public function battleWin($userId, $bet, $opponent) {
             $winResult = $this->updateUserByUserId($userId, array(
-                'coins' => $bet,
-                'wins'  => 1));
+                'coins'     => $bet,
+                'row_wins'  => 1,
+                'wins'      => 1,
+                'battles'   => 1));
 
             if($winResult->isError()) {
                 return $winResult;
             }
 
-            if($bet) {
+            if($bet && $opponent) {
                 $looseResult = $this->updateUserByUserId($opponent, array(
-                    'coins' => -1 * $bet));
+                    'coins'     => -1 * $bet,
+                    'row_wins'  => -1,
+                    'battles'   => 1));
 
                 if($looseResult->isError()) {
                     return $looseResult;
