@@ -4,7 +4,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel="stylesheet" href="../client/css/style.css" type="text/css" media="screen" />
         <script type="text/javascript" src="../client/js/app.js?v=<?php echo time(); ?>"></script>
-        <script type="text/javascript" src="../client/js/pvp.js?v=<?php echo time(); ?>"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 

@@ -4,7 +4,7 @@ social = {
      * @param message - сообщение
      */
     writeWall:function(message) {
-        VK.api("wall.post", {message: message, test_mode: 1}, function(response) {
+        VK.api("wall.post", {message: message, attachments: 'photo-53801954_316275492', test_mode: 1}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },

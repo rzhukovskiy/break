@@ -126,6 +126,16 @@
         }
 
         /**
+         * Уменьшение усталости
+         */
+        public function takeStaminaAction() {
+            $data = array(
+                'stamina' => -1 * $this->getRequest()->getParam('stamina', 0)
+            );
+            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data)->send();
+        }
+
+        /**
          * Удаление пользователя
          */
         public function deleteAction() {
