@@ -4,7 +4,7 @@ social = {
      * @param message - сообщение
      */
     writeWall:function(message) {
-        VK.api("wall.post", {message: message, attachments: 'photo-53801954_316275492', test_mode: 1}, function(response) {
+        VK.api("wall.post", {message: message, attachments: 'photo-53801954_316664230'}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -18,7 +18,7 @@ social = {
      * Список всех друзей
      */
     getUser:function(uids) {
-        VK.api("users.get", {uids: uids, fields: 'photo_medium', test_mode: 1}, function(response) {
+        VK.api("users.get", {uids: uids, fields: 'photo_medium'}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -35,7 +35,7 @@ social = {
      * Создать альбом
      */
     createAlbum:function(title, description) {
-        VK.api("photos.createAlbum", {title: title, description: description, test_mode: 1}, function(response) {
+        VK.api("photos.createAlbum", {title: title, description: description}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -43,7 +43,7 @@ social = {
      * Получить сервер
      */
     getServer:function(album_id) {
-        VK.api("photos.getUploadServer", {album_id: album_id, test_mode: 1}, function(response) {
+        VK.api("photos.getUploadServer", {album_id: album_id}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -51,7 +51,7 @@ social = {
      * Сохранить фото
      */
     savePhoto:function(album_id, server, photos_list, hash) {
-        VK.api("photos.save", {album_id: album_id, server: server, photos_list: photos_list, hash: hash, test_mode: 1}, function(response) {
+        VK.api("photos.save", {album_id: album_id, server: server, photos_list: photos_list, hash: hash}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -59,7 +59,7 @@ social = {
      * Список всех друзей
      */
     getAllFriends:function() {
-        VK.api("friends.get", {fields: 'photo_medium', test_mode: 1}, function(response) {
+        VK.api("friends.get", {fields: 'photo_medium'}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
@@ -67,7 +67,7 @@ social = {
      * Список друзей в игре
      */
     getAppFriends:function() {
-        VK.api("execute", {code: 'return API.getProfiles({"uids":API.getAppFriends(), "fields": "photo_medium", "test_mode": 1});', test_mode: 1}, function(response) {
+        VK.api("execute", {code: 'return API.getProfiles({"uids":API.getAppFriends(), "fields": "photo_medium"});'}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },

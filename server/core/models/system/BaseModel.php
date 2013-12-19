@@ -7,6 +7,8 @@
         private $_globals = null;
         /** @var array */
         private $_gameSettings = null;
+        /** @var Social */
+        protected $_social = null;
         /** @var string */
         protected $_table;
 
@@ -19,6 +21,9 @@
 
         private function __construct() {
             $this->_globals = Globals::init();
+
+            //class with social functions
+            $this->_social = new Social();
         }
 
         /**

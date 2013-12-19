@@ -56,6 +56,23 @@
         }
 
         /**
+         * Устанавливаем уровень
+         * @param $level int
+         * @return array|bool
+         */
+        public function setLevel($level) {
+            switch ($this->_platform) {
+                case 'vk':
+                    if(!$this->getUserId()) {
+                        return false;
+                    } else {
+                        return $this->_platformClass->api('secure.setUserLevel', array('user_id' => $this->getUserId(),'level' => $level));
+                    }
+                    break;
+            }
+        }
+
+        /**
          * Профиль пользователя в соцсети
          * @return array|bool
          */

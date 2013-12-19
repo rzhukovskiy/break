@@ -75,18 +75,19 @@
             }
             $level = $level->getData();
 
-            $data = array();
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
                 $awardResult = $this->giveAward($userId, $level['award']);
                 if($awardResult->isError()) {
                     return $awardResult;
                 }
                 $data = array(
-                    'energy_spent' => $user['energy_spent'] + $energySpent - $level['energy'],
+                    'energy_spent' => -1,
                     'stamina_max'  => $level['stamina_max'] - $user['stamina_max'],
                     'row_wins'     => $wins,
                     'level'        => 1
                 );
+
+                $this->_social->setLevel($user['level'] + 1);
             } else {
                 $data = array(
                     'energy_spent' => $user['energy_spent'] + $energySpent,
@@ -202,9 +203,12 @@
                   stamina_max  = stamina_max + :stamina_max,
                   energy_time  = energy_time + (:energy_time * energy_time) / 100,
                   stamina_time = stamina_time + (:stamina_time * stamina_time) / 100, ';
-            if($energySpent) {
+            if($energySpent > 0) {
                 $sql .= 'energy_spent = :energy_spent, ';
                 $updateData[':energy_spent'] = $energySpent;
+            }
+            if($energySpent < 0) {
+                $sql .= 'energy_spent = 0, ';
             }
             if($rowWins >=0 ) {
                 $sql .= 'row_wins = row_wins + :wins, ';
