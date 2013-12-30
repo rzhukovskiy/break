@@ -25,6 +25,12 @@
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_POST, 1);
             curl_setopt($curl, CURLOPT_POSTFIELDS, array('file1' => '@' . $fullFilePath));
-            echo curl_exec($curl);
+            $dataArray = json_decode(curl_exec($curl), true);
+
+            $dataArray['response_code'] = count($dataArray['photos_list']) > 0 ? 1 : 4;
+
+            unlink($fullFilePath);
+            $response->setData($dataArray);
+            $response->send();
         }
     }
