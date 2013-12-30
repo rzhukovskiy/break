@@ -97,8 +97,8 @@
                 );
             }
 
-            if(($user['row_wins'] + $wins) >= $settings['numWinsInRow']) {
-                $this->giveAward($userId, $settings['awardWinsInRow']);
+            if(($user['row_wins'] + $wins) >= $settings['num_wins_in_row']) {
+                $this->giveAward($userId, $settings['award_wins_in_row']);
                 $data['row_wins'] = -1;
             }
 
