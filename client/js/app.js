@@ -50,8 +50,8 @@ social = {
     /**
      * Сохранить фото
      */
-    savePhoto:function(album_id, server, photos_list, hash) {
-        VK.api("photos.save", {album_id: album_id, server: server, photos_list: photos_list, hash: hash}, function(response) {
+    savePhoto:function(album_id, server, photos_list, hash, caption) {
+        VK.api("photos.save", {album_id: album_id, server: server, photos_list: photos_list, hash: hash, caption:caption}, function(response) {
             thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
