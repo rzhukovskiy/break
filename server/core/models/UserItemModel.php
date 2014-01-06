@@ -168,8 +168,8 @@
         private function _applyUserItem($userId, $item) {
             $response = new Response();
 
-            if($item['type'] and $item['type'] != 'client' && $item['power']) {
-                $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['type'] => $item['power']));
+            if($item['bonus_type'] and $item['bonus_type'] != 'client' && $item['bonus_value']) {
+                $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['bonus_type'] => $item['bonus_value']));
             }
 
             return $response;
