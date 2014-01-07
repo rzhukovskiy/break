@@ -249,7 +249,7 @@
 
             $updateData = array(
                 ':user_id'      => $userId,
-                ':bucks'        => $settings['change_character_price '],
+                ':bucks'        => $settings['change_character_price'],
                 ':hair_id'      => isset($data['hair_id'])  ? $data['hair_id']  : 0,
                 ':face_id'      => isset($data['face_id'])  ? $data['face_id']  : 0,
                 ':nickname'     => isset($data['nickname']) ? $data['nickname'] : 'nickname');
