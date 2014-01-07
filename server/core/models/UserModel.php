@@ -336,7 +336,7 @@
          * @param int $opponent
          * @return Response
          */
-        public function battleLoose($userId, $bet, $opponent) {
+        public function battleLose($userId, $bet, $opponent) {
             $winResult = $this->updateUserByUserId($userId, array(
                 'coins'     => -1 * $bet,
                 'row_wins'  => -1,

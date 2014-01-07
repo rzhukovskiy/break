@@ -143,11 +143,11 @@
         /**
          * Проигрыш в пвп
          */
-        public function battleLooseAction() {
+        public function battleLoseAction() {
             $bet = $this->getRequest()->getParam('bet', 0);
             $opponent = $this->getRequest()->getParam('opponent', false);
 
-            UserModel::getInstance()->battleLoose($this->getUserId(), $bet, $opponent)->send();
+            UserModel::getInstance()->battleLose($this->getUserId(), $bet, $opponent)->send();
         }
 
         /**
