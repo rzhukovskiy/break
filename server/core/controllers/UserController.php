@@ -70,9 +70,9 @@
         }
 
         /**
-         * Сохранение очков пользователя
+         * Изменение внешности и имени пользователя
          */
-        public function updateUserAppearenceAction() {
+        public function updateUserAppearanceAction() {
             $faceId = $this->getRequest()->getParam('face_id', 1);
             $hairId = $this->getRequest()->getParam('hair_id', 1);
             $nickname = $this->getRequest()->getParam('nickname', $this->getUserId());
