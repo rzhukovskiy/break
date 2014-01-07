@@ -72,6 +72,21 @@
         /**
          * Сохранение очков пользователя
          */
+        public function updateUserAppearenceAction() {
+            $faceId = $this->getRequest()->getParam('face_id', 1);
+            $hairId = $this->getRequest()->getParam('hair_id', 1);
+            $nickname = $this->getRequest()->getParam('nickname', $this->getUserId());
+
+            UserModel::getInstance()->updateUserAppearanceByUserId($this->getUserId(), array(
+                'face_id' => $faceId,
+                'hair_id' => $hairId,
+                'nickname' => $nickname
+            ))->send();
+        }
+
+        /**
+         * Сохранение очков пользователя
+         */
         public function getTopUsersAction() {
             $amount = $this->getRequest()->getParam('amount', 10);
             $days = $this->getRequest()->getParam('days', 1);

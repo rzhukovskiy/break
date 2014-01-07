@@ -222,8 +222,49 @@
                   id = :user_id AND
                   coins + :coins >= 0 AND
                   chips + :chips >= 0 AND
+                  bucks + :bucks >= 0 AND
                   stamina + :stamina >= 0 AND
                   energy + :energy >= 0';
+            $query = $db->prepare($sql);
+            $query->execute($updateData);
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+            return $response;
+        }
+
+        /**
+         * Обновляем табличку user
+         * @param int $userId
+         * @param array $data
+         * @return Response
+         */
+        public function updateUserAppearanceByUserId($userId, $data) {
+            /** @var $db PDO */
+            $db = $this->getDataBase();
+            $response = new Response();
+            $settings = $this->getSettingList();
+
+            $updateData = array(
+                ':user_id'      => $userId,
+                ':bucks'        => $settings['change_character_price '],
+                ':hair_id'      => isset($data['hair_id'])  ? $data['hair_id']  : 0,
+                ':face_id'      => isset($data['face_id'])  ? $data['face_id']  : 0,
+                ':nickname'     => isset($data['nickname']) ? $data['nickname'] : 'nickname');
+
+            $sql =
+                'UPDATE
+                  user
+                SET
+                  bucks        = bucks - :bucks,
+                  hair_id      = :hair_id,
+                  face_id      = :face_id,
+                  nickname     = :nickname
+                WHERE
+                  id = :user_id AND
+                  bucks - :bucks >= 0';
             $query = $db->prepare($sql);
             $query->execute($updateData);
 
@@ -278,6 +319,38 @@
                 $looseResult = $this->updateUserByUserId($opponent, array(
                     'coins'     => -1 * $bet,
                     'row_wins'  => -1,
+                    'battles'   => 1));
+
+                if($looseResult->isError()) {
+                    return $looseResult;
+                }
+            }
+
+            return $this->getEntityByEntityId($userId);
+        }
+
+        /**
+         * Выдаем пользователю плюхи за победу
+         * @param int $userId
+         * @param int $bet
+         * @param int $opponent
+         * @return Response
+         */
+        public function battleLoose($userId, $bet, $opponent) {
+            $winResult = $this->updateUserByUserId($userId, array(
+                'coins'     => -1 * $bet,
+                'row_wins'  => -1,
+                'battles'   => 1));
+
+            if($winResult->isError()) {
+                return $winResult;
+            }
+
+            if($bet && $opponent) {
+                $looseResult = $this->updateUserByUserId($opponent, array(
+                    'coins'     => $bet,
+                    'row_wins'  => 1,
+                    'wins'      => 1,
                     'battles'   => 1));
 
                 if($looseResult->isError()) {
