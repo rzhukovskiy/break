@@ -417,6 +417,17 @@
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
 
+            $sql = 'DELETE FROM user_news WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
             return $response;
         }
 
