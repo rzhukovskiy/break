@@ -85,6 +85,17 @@
         }
 
         /**
+         * Обмен баксов
+         */
+        public function sellBucksAction() {
+            $bucks = $this->getRequest()->getParam('bucks', 0);
+
+            UserModel::getInstance()->sellBucks($this->getUserId(), $bucks);
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+        }
+
+        /**
          * Сохранение очков пользователя
          */
         public function getTopUsersAction() {

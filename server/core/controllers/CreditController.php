@@ -39,7 +39,7 @@
                             $response['response'] = array(
                                 'item_id' => $offerId,
                                 'title' => ($offer['bucks'] + $offer['bonus']) . ' баксов',
-                                'photo_url' => 'http://somesite/images/coin.jpg',
+                                'photo_url' => 'https://bb1vs1.ru/client/img/Money.png',
                                 'price' => $offer['cost']
                             );
                         } else {
@@ -62,7 +62,7 @@
                             $response['response'] = array(
                                 'item_id' => $offerId,
                                 'title' => ($offer['bucks'] + $offer['bonus']) . ' баксов',
-                                'photo_url' => 'http://somesite/images/coin.jpg',
+                                'photo_url' => 'https://bb1vs1.ru/client/img/Money.png',
                                 'price' => $offer['cost']
                             );
                         } else {

@@ -375,6 +375,20 @@
         }
 
         /**
+         * Меняем валюту
+         * @param int $userId
+         * @param int $bucks
+         * @return Response
+         */
+        public function sellBucks($userId, $bucks) {
+            $settings = $this->getSettingList();
+
+            return $this->updateUserByUserId($userId, array(
+                'bucks' => -1 * $bucks,
+                'coins' => $bucks * $settings['bucks_to_coins']));
+        }
+
+        /**
          * Удалить указанного пользователя
          * @param int $userId
          * @return Response
