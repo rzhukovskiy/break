@@ -168,7 +168,9 @@
             $data = array(
                 'stamina' => -1 * $this->getRequest()->getParam('stamina', 0)
             );
-            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data)->send();
+            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
         }
 
         /**

@@ -81,13 +81,16 @@
                     return $awardResult;
                 }
                 $data = array(
-                    'energy_spent' => -1,
+                    'energy_spent' => $user['energy_spent'] + $energySpent - $level['energy'],
                     'stamina_max'  => $level['stamina_max'] - $user['stamina_max'],
                     'row_wins'     => $wins,
                     'level'        => 1
                 );
 
                 $this->_social->setLevel($user['level'] + 1);
+            }
+            elseif(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins < $level['wins'])) {
+                $response->setCode(Response::CODE_ERROR)->setError('Not enough wins');
             } else {
                 $data = array(
                     'energy_spent' => $user['energy_spent'] + $energySpent,
