@@ -89,7 +89,7 @@
 
                 $this->_social->setLevel($user['level'] + 1);
             }
-            elseif($energySpent && ($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins < $level['wins'])) {
+            elseif($energySpent && ($user['energy_spent'] + $energySpent > $level['energy']) && ($user['wins'] + $wins < $level['wins'])) {
                 $response->setCode(Response::CODE_ERROR)->setError('Not enough wins');
 
                 return $response;
