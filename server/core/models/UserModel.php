@@ -545,7 +545,7 @@
             }
 
             //что мы должны дать пользователю за указанное количество дней
-            $award = DailyAwardModel::getInstance()->getAwardByDay($day);
+            $award = DailyAwardModel::getInstance()->getAwardByDay($day == 1 ? $day : $day - 1);
             if($award->isError()) {
                 return $award;
             }
