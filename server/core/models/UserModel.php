@@ -537,7 +537,7 @@
              * если больше 2х дней или прошел весь цикл - сбрасываем счетчик дней
              */
             if(strtotime($user['award_date']) <= time() - 24*60*60 && strtotime($user['award_date']) > time() - 48*60*60) {
-                $day = $user['award_day'] <= 4 ? $user['award_day'] + 1 : 1;
+                $day = $user['award_day'] <= 5 ? $user['award_day'] + 1 : 1;
             } else if(strtotime($user['award_date']) < time() - 48*60*60) {
                 $day = 1;
             } else {
