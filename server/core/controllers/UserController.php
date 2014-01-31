@@ -184,7 +184,9 @@
          * Даем ежедневную награду
          */
         public function dailyAwardAction() {
-            UserModel::getInstance()->giveDailyAward($this->getUserId())->send();
+            UserModel::getInstance()->giveDailyAward($this->getUserId());
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
         }
 
         /**

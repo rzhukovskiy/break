@@ -536,8 +536,8 @@
              * если прошло меньше суток - ничего не делаем
              * если больше 2х дней или прошел весь цикл - сбрасываем счетчик дней
              */
-            if(strtotime($user['award_date']) < time() - 24*60*60 && strtotime($user['award_date']) > time() - 48*60*60) {
-                $day = $user['award_day'] <= 6 ? $user['award_day'] + 1 : 1;
+            if(strtotime($user['award_date']) <= time() - 24*60*60 && strtotime($user['award_date']) > time() - 48*60*60) {
+                $day = $user['award_day'] <= 4 ? $user['award_day'] + 1 : 1;
             } else if(strtotime($user['award_date']) < time() - 48*60*60) {
                 $day = 1;
             } else {
@@ -576,7 +576,7 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-            return $response->setData(array('award' => $awardResponse->getData()));
+            return $response;
         }
 
         /**
