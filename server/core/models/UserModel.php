@@ -612,6 +612,7 @@
                     wins,
                     coins,
                     chips,
+                    bucks,
                     create_date,
                     award_date,
                     energy_date,
@@ -633,6 +634,7 @@
                     0,
                     :coins,
                     :chips,
+                    :bucks,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
@@ -651,6 +653,7 @@
                 ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
                 ':chips'        => $settings['start_chips'],
+                ':bucks'        => $settings['start_bucks'],
                 ':energy_time'  => $settings['energy_time'],
                 ':stamina_time' => $settings['stamina_time']
             ));
