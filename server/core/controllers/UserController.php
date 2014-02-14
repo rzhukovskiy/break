@@ -29,6 +29,7 @@
                 'user'                      => $user->getData(), //пользователь
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
+                'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
                 'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($this->getUserId())->getData(), //слоты
@@ -67,6 +68,15 @@
             $scores = $this->getRequest()->getParam('scores', 0);
 
             UserScoresModel::getInstance()->saveUserScores($this->getUserId(), $gameId, $scores)->send();
+        }
+
+        /**
+         * Сохранение тутора пользователя
+         */
+        public function saveTutorialStepAction() {
+            $tutorialId = $this->getRequest()->getParam('tutorial_id', false);
+
+            UserTutorialModel::getInstance()->saveTutorial($this->getUserId(), $tutorialId)->send();
         }
 
         /**
