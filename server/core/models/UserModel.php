@@ -412,7 +412,6 @@
             $query->execute(array(
                 ':user_id' => $userId
             ));
-
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
@@ -423,7 +422,6 @@
             $query->execute(array(
                 ':user_id' => $userId
             ));
-
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
@@ -434,13 +432,26 @@
             $query->execute(array(
                 ':user_id' => $userId
             ));
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
 
             $sql = 'DELETE FROM user_tutorial WHERE user_id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId
             ));
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
 
+            $sql = 'DELETE FROM user_consumables WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
@@ -451,7 +462,6 @@
             $query->execute(array(
                 ':user_id' => $userId
             ));
-
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
@@ -507,7 +517,7 @@
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  stamina = stamina + LEAST((TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time) * 5, stamina_max - stamina),
+                  stamina = stamina + LEAST((TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time), stamina_max - stamina),
                   stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time SECOND)
                 WHERE
                   id = :user_id';
