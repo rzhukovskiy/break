@@ -132,10 +132,10 @@
                 return $response;
             }
 
-            $response = $this->updateUserByUserId($userId, $award);
+            $updateResult = $this->updateUserByUserId($userId, $award);
 
-            if($response->isError()) {
-                return $response;
+            if($updateResult->isError() && !$updateResult->isEmpty()) {
+                return $updateResult;
             }
 
             if(isset($award['item_id']) && $award['item_id']) {
@@ -238,7 +238,7 @@
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
             if($query->rowCount() < 1){
-                $response->setCode(Response::CODE_ERROR)->setError('Not enough resources');
+                $response->setCode(Response::CODE_EMPTY)->setError('Not enough resources');
             }
 
             return $response;

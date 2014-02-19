@@ -161,7 +161,7 @@
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
             if($query->rowCount() < 1){
-                $response->setCode(Response::CODE_ERROR)->setError('Not enough consumables');
+                $response->setCode(Response::CODE_EMPTY)->setError('Not enough consumables');
             }
 
             $response->setData(UserModel::getInstance()->getEntityByEntityId($userId)->getData());

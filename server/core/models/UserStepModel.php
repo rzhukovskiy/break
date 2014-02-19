@@ -148,7 +148,7 @@
                     'coins'         => $coinsCost,
                     'energy_spent'  => $energySpent
                 ));
-                if($updateResult->isError()) {
+                if($updateResult->isError() && !$updateResult->isEmpty()) {
                     return $updateResult;
                 }
 
@@ -163,7 +163,7 @@
                     'energy'        => -1 * $energySpent,
                     'energy_spent'  => $energySpent
                 ));
-                if($updateResult->isError()) {
+                if($updateResult->isError() && !$updateResult->isEmpty()) {
                     return $updateResult;
                 }
 
