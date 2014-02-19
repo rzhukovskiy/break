@@ -196,9 +196,9 @@
             );
 
             $sql =
-                'UPDATE
-                  user
-                SET
+                'UPDATE '
+                  . $this->_table .
+                ' SET
                   coins        = coins + :coins,
                   bucks        = bucks + :bucks,
                   chips        = chips + :chips,
@@ -237,6 +237,10 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
+            if($query->rowCount() < 1){
+                $response->setCode(Response::CODE_ERROR)->setError('Not enough resources');
+            }
+
             return $response;
         }
 
@@ -426,6 +430,12 @@
             }
 
             $sql = 'DELETE FROM user_step WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+
+            $sql = 'DELETE FROM user_tutorial WHERE user_id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId
