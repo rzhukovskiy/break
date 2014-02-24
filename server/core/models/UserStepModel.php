@@ -143,9 +143,11 @@
             $neededEnergy = $step['energy_' . $learningStepLevel] - (isset($step['energy_' . ($learningStepLevel - 1)]) ? $step['energy_' . ($learningStepLevel - 1)] : 0);
             if($newEnergy >= $neededEnergy) {
                 $coinsCost = isset($step['coins_' . $learningStepLevel]) ? -1 * $step['coins_' . $learningStepLevel] : 0;
+                $bucksCost = isset($step['bucks' . $learningStepLevel]) ? -1 * $step['bucks' . $learningStepLevel] : 0;
                 $updateResult = UserModel::getInstance()->updateUserByUserId($userId, array(
                     'energy'        => -1 * $energySpent,
                     'coins'         => $coinsCost,
+                    'bucks'         => $bucksCost,
                     'energy_spent'  => $energySpent
                 ));
                 if($updateResult->isError() && !$updateResult->isEmpty()) {
