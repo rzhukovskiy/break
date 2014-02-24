@@ -134,7 +134,7 @@
 
             if($consumables['bonus_type'] && $consumables['bonus_type'] != 'client' && $consumables['bonus_value']) {
                 $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array($consumables['bonus_type'] => $consumables['bonus_value']));
-                if($awardResult->isError()) {
+                if($awardResult->isError() && !$awardResult->isEmpty()) {
                     return $awardResult;
                 }
             }
@@ -160,8 +160,9 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-
-            $response->setData($this->getUserConsumablesListByUserId($userId)->getData());
+            if($query->rowCount() < 1){
+                $response->setCode(Response::CODE_EMPTY)->setError('Not enough consumables');
+            }
 
             return $response;
         }

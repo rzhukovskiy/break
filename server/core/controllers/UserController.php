@@ -228,7 +228,16 @@
          * Покупка предмета
          */
         public function applyConsumablesAction() {
-            UserConsumablesModel::getInstance()->applyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false))->send();
+            $res = UserConsumablesModel::getInstance()->applyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false));
+
+            if($res->isError()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
         }
 
         /**
