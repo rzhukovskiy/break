@@ -25,8 +25,12 @@
             }
 
             $response = new Response();
+            $userData = $user->getData();
+            if($userData['banned']) {
+                die;
+            }
             $response->setData(array(
-                'user'                      => $user->getData(), //пользователь
+                'user'                      => $userData, //пользователь
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
