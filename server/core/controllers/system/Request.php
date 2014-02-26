@@ -59,7 +59,7 @@
             if ($this->_settings->isTestMode()) {
                 return true;
             } else {
-                $reserved = array('ts', 'access_key');
+                $reserved = array('ts', 'access_key', 'nickname');
                 ksort($this->_data);
                 $data = '';
                 foreach($this->_data as $key => $value) {
