@@ -91,20 +91,35 @@
             $dataDb = $this->getDataBase();
             $response = new Response();
 
-            $sql =
-                'SELECT
-                    *
-                FROM
-                    ' . $this->_table . '
-                WHERE
-                     modify_date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :days DAY)
-                ORDER BY
-                    scores DESC
-                LIMIT :amount';
-            $query = $dataDb->prepare($sql);
-            $query->bindValue(':amount', (int)$amount, PDO::PARAM_INT);
-            $query->bindValue(':days', $days, PDO::PARAM_INT);
-            $query->execute();
+            if($days < 32) {
+                $sql =
+                    'SELECT
+                        *
+                    FROM
+                        ' . $this->_table . '
+                    WHERE
+                         modify_date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL :days DAY)
+                    ORDER BY
+                        scores DESC
+                    LIMIT :amount';
+                $query = $dataDb->prepare($sql);
+                $query->bindValue(':amount', (int)$amount, PDO::PARAM_INT);
+                $query->bindValue(':days', $days, PDO::PARAM_INT);
+                $query->execute();
+            } else {
+                $sql =
+                    'SELECT
+                        *
+                    FROM
+                        ' . $this->_table . '
+                    WHERE scores > 0
+                    ORDER BY
+                        scores DESC
+                    LIMIT :amount';
+                $query = $dataDb->prepare($sql);
+                $query->bindValue(':amount', (int)$amount, PDO::PARAM_INT);
+                $query->execute();
+            }
 
             $err = $query->errorInfo();
             if($err[1] != null){

@@ -50,4 +50,48 @@
 
             return $response;
         }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserMusicList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT music, count(id) as amount FROM ' . $this->_table . ' GROUP BY music';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserSfxList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT sfx, count(id) as amount FROM ' . $this->_table . ' GROUP BY sfx';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
     }

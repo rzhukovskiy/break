@@ -11,7 +11,7 @@
     );
 
     $config['internal_key']             = 'wfp4eo34';
-    $config['request_timeout']          = 10;
+    $config['request_timeout']          = 30;
     $config['test_mode']                = false; //if set to true then it can work without auth on facebook with user id = test_mode_user_id
     $config['test_mode_user']           = 1;
 

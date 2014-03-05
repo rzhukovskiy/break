@@ -60,6 +60,72 @@
             return $response;
         }
 
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserLevelList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT level, count(id) as amount FROM ' . $this->_table . ' GROUP BY level';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserCoinsList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT count(id) as amount, (coins div 500) as hundreds FROM  ' . $this->_table . '  GROUP BY hundreds';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserBucksList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT count(id) as amount, (bucks div 5) as hundreds FROM  ' . $this->_table . '  GROUP BY hundreds';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
         private function _raiseUserLevel($userId, $energySpent, $wins) {
             $settings = $this->getSettingList();
             $response = new Response();

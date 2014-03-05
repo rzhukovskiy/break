@@ -29,13 +29,15 @@
             $this->_social = new Social();
 
             //проверяем валидность запроса
-            if(!$this->_withoutChecking && !$this->getRequest()->isValid()) {
-                $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
-            }
+            if(!$this->_withoutChecking) {
+                if(!$this->getRequest()->isValid()) {
+                    $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
+                }
 
-            //проверяем авторизацию
-            if(!$this->getUserId()) {
-                $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
+                //проверяем авторизацию
+                if(!$this->getUserId()) {
+                    $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
+                }
             }
 
             //устанавливаем путь до вьюх

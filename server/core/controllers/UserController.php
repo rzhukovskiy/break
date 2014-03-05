@@ -92,11 +92,17 @@
             $hairId = $this->getRequest()->getParam('hair_id', 1);
             $nickname = $this->getRequest()->getParam('nickname', $this->getUserId());
 
-            UserModel::getInstance()->updateUserAppearanceByUserId($this->getUserId(), array(
+            $res = UserModel::getInstance()->updateUserAppearanceByUserId($this->getUserId(), array(
                 'face_id' => $faceId,
                 'hair_id' => $hairId,
                 'nickname' => $nickname
-            ))->send();
+            ));
+
+            if($res->isError()) {
+                $res->send();
+            } else {
+                UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+            }
         }
 
         /**
