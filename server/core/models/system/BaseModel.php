@@ -179,6 +179,9 @@
             }
             if(isset($fields['id'])) {
                 $createSql .= ' PRIMARY KEY (`id`)';
+            }
+            else if(isset($fields['day'])) {
+                $createSql .= ' PRIMARY KEY (`day`)';
             } else {
                 $createSql = substr($createSql, 0, strlen($createSql) - 1);
             }

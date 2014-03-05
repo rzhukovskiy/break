@@ -101,7 +101,7 @@
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
-            if($item['coins'] > 0) {
+            if(($item['coins'] > 0) || ($item['bucks'] > 0)) {
                 $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
                     'coins'  => -1 * $item['coins'],
                     'bucks'  => -1 * $item['bucks']
@@ -141,7 +141,7 @@
             }
             $item = $item->getData();
 
-            if($item['coins'] > 0) {
+            if(($item['coins'] > 0) || ($item['bucks'] > 0)) {
                 $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array(
                     'coins'  => $item['coins'] / 2,
                     'bucks'  => $item['bucks'] / 2

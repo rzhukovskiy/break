@@ -7,6 +7,7 @@
         const CODE_NOT_AUTH     = 2; //пользователь не авторизован
         const CODE_WRONG_DATA   = 3; //неверные данные (запрос отработал без ошибок, но не изменил бд, так как не выполнилось какое-то условие)
         const CODE_ERROR        = 4; //запрос вызвал ошибку
+        const CODE_EMPTY        = 5; //запрос не вызвал ошибку, но не отработал
 
         /** @var int */
         private $_responseCode = self::CODE_OK;
@@ -58,6 +59,14 @@
          */
         public function isError() {
             return $this->_responseCode != self::CODE_OK;
+        }
+
+        /**
+         * Является ли ошибочным. Ошибочный - любой не ок
+         * @return bool
+         */
+        public function isEmpty() {
+            return $this->_responseCode == self::CODE_EMPTY;
         }
 
         /**

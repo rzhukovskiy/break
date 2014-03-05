@@ -68,7 +68,7 @@
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId,
-                ':step_id' => $slotId,
+                ':slot_id' => $slotId,
             ));
 
             $err = $query->errorInfo();

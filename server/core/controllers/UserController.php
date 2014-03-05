@@ -25,11 +25,17 @@
             }
 
             $response = new Response();
+            $userData = $user->getData();
+            if($userData['banned']) {
+                die;
+            }
             $response->setData(array(
-                'user'                      => $user->getData(), //пользователь
+                'user'                      => $userData, //пользователь
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
+                'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
+                'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
                 'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($this->getUserId())->getData(), //слоты
                 'user_step_list'            => UserStepModel::getInstance()->getUserStepListByUserId($this->getUserId())->getData(), //движения
@@ -67,6 +73,15 @@
             $scores = $this->getRequest()->getParam('scores', 0);
 
             UserScoresModel::getInstance()->saveUserScores($this->getUserId(), $gameId, $scores)->send();
+        }
+
+        /**
+         * Сохранение тутора пользователя
+         */
+        public function saveTutorialStepAction() {
+            $tutorialId = $this->getRequest()->getParam('tutorial_id', false);
+
+            UserTutorialModel::getInstance()->saveTutorial($this->getUserId(), $tutorialId)->send();
         }
 
         /**
@@ -204,6 +219,38 @@
          */
         public function buyItemAction() {
             UserItemModel::getInstance()->buyUserItem($this->getUserId(), $this->getRequest()->getParam('item_id', false), $this->getRequest()->getParam('color', 'no_color'))->send();
+        }
+
+        /**
+         * Покупка предмета
+         */
+        public function buyConsumablesAction() {
+            $res = UserConsumablesModel::getInstance()->buyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false), $this->getRequest()->getParam('count', 1));
+
+            if($res->isError()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
+        }
+
+        /**
+         * Покупка предмета
+         */
+        public function applyConsumablesAction() {
+            $res = UserConsumablesModel::getInstance()->applyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false));
+
+            if($res->isError()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
         }
 
         /**
