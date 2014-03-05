@@ -45,7 +45,7 @@
          */
         private function loadController($controllerName, $action) {
             try {
-                $controller = new $controllerName();
+                $controller = new $controllerName($action);
                 if(method_exists($controllerName, $action)) {
                     call_user_func_array(array($controller, $action), array());
                 } else if(method_exists($controllerName, 'indexAction')) {

@@ -6,7 +6,11 @@
      * Данные можно передавать как в ПОСТ так и в ГЕТ массивах
      */
     class UserController extends BaseController {
-        public function __construct() {
+        public function __construct($action = '') {
+            /** @var bool */
+            if($action == 'getAction') {
+                $this->_withoutChecking = true;
+            }
             parent::__construct();
 
             //проверяем таймеры пользователя (восстанавливаем энергию и т.п.)
