@@ -55,7 +55,7 @@
          * Проверяет подпись. В тестовом режиме всегда возращает true
          * @return bool
          */
-        public function isValid() {
+        public function getStatus() {
             if ($this->_settings->isTestMode()) {
                 return true;
             } else {
@@ -81,7 +81,12 @@
                     $time = $ts;
                 }
 
-                return ($accessKey == md5($internalKey . md5($internalKey . $ts . $data))) && ($time >= (time() - $requestTimeout));
+                if($accessKey != md5($internalKey . md5($internalKey . $ts . $data))) {
+                    return Response::CODE_NOT_AUTH;
+                } elseif($time <= (time() - $requestTimeout)) {
+                    return Response::REQUEST_TIMEOUT;
+                }
+                return Response::CODE_OK;
             }
         }
     }

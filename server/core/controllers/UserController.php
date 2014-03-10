@@ -38,6 +38,7 @@
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
+                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //туториал
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
@@ -86,6 +87,15 @@
             $tutorialId = $this->getRequest()->getParam('tutorial_id', false);
 
             UserTutorialModel::getInstance()->saveTutorial($this->getUserId(), $tutorialId)->send();
+        }
+
+        /**
+         * Сохранение тутора пользователя
+         */
+        public function saveMissionAction() {
+            $missionId = $this->getRequest()->getParam('mission_id', false);
+
+            UserMissionModel::getInstance()->saveMission($this->getUserId(), $missionId)->send();
         }
 
         /**

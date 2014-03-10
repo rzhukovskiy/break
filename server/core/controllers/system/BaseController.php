@@ -30,8 +30,9 @@
 
             //проверяем валидность запроса
             if(!$this->_withoutChecking) {
-                if(!$this->getRequest()->isValid()) {
-                    $this->_response->setCode(Response::CODE_NOT_AUTH)->send();
+                $requestStatus = $this->getRequest()->getStatus();
+                if($requestStatus != Response::CODE_OK) {
+                    $this->_response->setCode($requestStatus)->send();
                 }
 
                 //проверяем авторизацию

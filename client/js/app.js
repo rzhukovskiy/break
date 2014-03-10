@@ -14,6 +14,19 @@ social = {
     inviteFriends:function() {
         VK.callMethod("showInviteBox");
     },
+    isMember:function() {
+        VK.api("groups.isMember", {group_id: "bb1vs1"}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    isInstalled:function() {
+        VK.api("account.getAppPermissions", function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response.response & 256) );
+        });
+    },
+    addLeft:function() {
+        VK.callMethod("showSettingsBox", 256);
+    },
     /**
      * Список всех друзей
      */
