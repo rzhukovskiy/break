@@ -28,19 +28,23 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (id, music, sfx, lang)
+                    (id, music, sfx, lang, bet, moves)
                 VALUES
-                    (:user_id, :music, :sfx, :lang)
+                    (:user_id, :music, :sfx, :lang, :bet, :moves)
                 ON DUPLICATE KEY UPDATE
                     music = :music,
                     sfx = :sfx,
-                    lang = :lang';
+                    lang = :lang,
+                    bet = :bet,
+                    turns = :turns';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'  => $userId,
                 ':music'    => isset($settings['music']) ? $settings['music'] : 1,
                 ':sfx'      => isset($settings['sfx']) ? $settings['sfx'] : 1,
-                ':lang'     => isset($settings['lang']) ? $settings['lang'] : 'ru'
+                ':lang'     => isset($settings['lang']) ? $settings['lang'] : 'ru',
+                ':bet'      => isset($settings['bet']) ? $settings['bet'] : 50,
+                ':turns'      => isset($settings['turns']) ? $settings['turns'] : 1
             ));
 
             $err = $query->errorInfo();

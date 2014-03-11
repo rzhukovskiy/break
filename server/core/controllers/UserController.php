@@ -39,6 +39,7 @@
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
                 'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //туториал
+                'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //туториал
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
@@ -168,11 +169,15 @@
             $music = $this->getRequest()->getParam('music', 1);
             $sfx = $this->getRequest()->getParam('sfx', 1);
             $lang = $this->getRequest()->getParam('lang', 1);
+            $bet = $this->getRequest()->getParam('bet', 50);
+            $moves = $this->getRequest()->getParam('turns', 1);
 
             UserSettingsModel::getInstance()->updateSettingsByUserId($this->getUserId(), array(
                 'music' => $music,
                 'sfx' => $sfx,
-                'lang' => $lang
+                'lang' => $lang,
+                'bet' => $bet,
+                'turns' => $moves
             ))->send();
         }
 
@@ -305,24 +310,18 @@
         }
 
         /**
-         * Даем награду. Не забыть убрать из продакшена
+         * Даем награду.
          */
-        public function awardAction() {
-            $data = array(
-                'coins'         => $this->getRequest()->getParam('coins') ? $this->getRequest()->getParam('coins') : 0,
-                'chips'        => $this->getRequest()->getParam('chips') ? $this->getRequest()->getParam('chips') : 0,
-                'energy'       => $this->getRequest()->getParam('energy') ? $this->getRequest()->getParam('energy') : 0,
-                'energy_max'   => $this->getRequest()->getParam('energy_max') ? $this->getRequest()->getParam('energy_max') : 0,
-                'stamina'      => $this->getRequest()->getParam('stamina') ? $this->getRequest()->getParam('stamina') : 0,
-                'stamina_max'  => $this->getRequest()->getParam('stamina_max') ? $this->getRequest()->getParam('stamina_max') : 0,
-                'energy_time'  => $this->getRequest()->getParam('energy_time') ? $this->getRequest()->getParam('energy_time') : 0,
-                'stamina_time' => $this->getRequest()->getParam('stamina_time') ? $this->getRequest()->getParam('stamina_time') : 0,
-                'energy_spent' => $this->getRequest()->getParam('energy_spent') ? $this->getRequest()->getParam('energy_spent') : 0,
-                'wins'         => $this->getRequest()->getParam('wins') ? $this->getRequest()->getParam('wins') : 0,
-                'battles'      => $this->getRequest()->getParam('battles') ? $this->getRequest()->getParam('battles') : 0,
-                'level'        => $this->getRequest()->getParam('level') ? $this->getRequest()->getParam('level') : 0,
-            );
-            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data)->send();
+        public function giveAwardAction() {
+            $awardId = $this->getRequest()->getParam('award_id', 'wrong_award');
+
+            $res = UserAwardModel::getInstance()->giveAward($this->getUserId(), $awardId);
+
+            if($res->isError()) {
+                $res->send();
+            } else {
+                UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+            }
         }
 
         /**
