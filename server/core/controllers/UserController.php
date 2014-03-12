@@ -96,7 +96,15 @@
         public function saveMissionAction() {
             $missionId = $this->getRequest()->getParam('mission_id', false);
 
-            UserMissionModel::getInstance()->saveMission($this->getUserId(), $missionId)->send();
+            $res = UserMissionModel::getInstance()->saveMission($this->getUserId(), $missionId);
+
+            if($res->isError()) {
+                $res->send();
+            }
+            $res->setData(array(
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //миссии
+            ))->send();
         }
 
         /**

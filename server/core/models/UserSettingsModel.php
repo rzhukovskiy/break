@@ -28,9 +28,9 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (id, music, sfx, lang, bet, moves)
+                    (id, music, sfx, lang, bet, turns)
                 VALUES
-                    (:user_id, :music, :sfx, :lang, :bet, :moves)
+                    (:user_id, :music, :sfx, :lang, :bet, :turns)
                 ON DUPLICATE KEY UPDATE
                     music = :music,
                     sfx = :sfx,

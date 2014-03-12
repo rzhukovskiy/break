@@ -21,7 +21,8 @@ social = {
     },
     isInstalled:function() {
         VK.api("account.getAppPermissions", function(response) {
-            thisMovie("application").sendFromJS( JSON.stringify(response.response & 256) );
+            response.response = response.response & 256;
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
         });
     },
     addLeft:function() {
