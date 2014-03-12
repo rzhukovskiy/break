@@ -328,7 +328,10 @@
             if($res->isError()) {
                 $res->send();
             } else {
-                UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //миссии
+                ))->send();
             }
         }
 
