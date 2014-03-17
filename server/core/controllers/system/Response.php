@@ -75,8 +75,8 @@
          */
         public function send() {
             $response = array();
-            $response['server_time']    = time();
-            $response['server_date']    = date('Y-m-d H:i:s');
+            $response['server_date']    = date('Y-m-d H:i:s P', time());
+            $response['server_time']    = strtotime($response['server_date']);
             $response['response_code']  = $this->_responseCode;
             $response['data']           = $this->_data;
             $response['error']          = $this->_error;

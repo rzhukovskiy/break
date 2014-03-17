@@ -97,7 +97,7 @@
             }
             $item = $item->getData();
 
-            if(!$this->_checkItemConditions($userId, $item)) {
+            if(!$this->_checkItemConditions($userId, $itemId)) {
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
@@ -162,11 +162,17 @@
         /**
          * применяем предмет
          * @param int $userId
-         * @param array $item
+         * @param string $itemId
          * @return Response
          */
-        private function _applyUserItem($userId, $item) {
+        private function _applyUserItem($userId, $itemId) {
             $response = new Response();
+
+            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
+            if($item->isError()) {
+                return $item;
+            }
+            $item = $item->getData();
 
             if($item['bonus_type'] and $item['bonus_type'] != 'client' && $item['bonus_value']) {
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['bonus_type'] => $item['bonus_value']));
@@ -186,14 +192,6 @@
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
-
-            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
-            if($item->isError()) {
-                return $item;
-            }
-            $item = $item->getData();
-
-            $response = $this->_applyUserItem($userId, $item);
 
             $sql =
                 'INSERT INTO
@@ -223,6 +221,12 @@
          */
         private function _checkItemConditions($userId, $item)
         {
+            $item = ItemModel::getInstance()->getEntityByEntityId($item);
+            if($item->isError()) {
+                return false;
+            }
+
+            $item = $item->getData();
             switch($item['condition_type']) {
                 case 'step':
                     list($stepId, $stepLevel) = explode(':', $item['condition_value']);

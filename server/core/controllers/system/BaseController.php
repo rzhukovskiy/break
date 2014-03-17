@@ -31,6 +31,7 @@
             //проверяем валидность запроса
             if(!$this->_withoutChecking) {
                 $requestStatus = $this->getRequest()->getStatus();
+
                 if($requestStatus != Response::CODE_OK) {
                     $this->_response->setCode($requestStatus)->send();
                 }

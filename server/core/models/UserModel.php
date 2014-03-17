@@ -254,8 +254,6 @@
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
                 ':stamina_max'  => $staminaMax,
-                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
-                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
                 ':wins'         => $wins,
                 ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
                 ':level'        => $level
@@ -271,9 +269,7 @@
                   energy       = LEAST(energy + :energy, energy_max),
                   energy_max   = energy_max + :energy_max,
                   stamina      = LEAST(stamina + :stamina, stamina_max),
-                  stamina_max  = stamina_max + :stamina_max,
-                  energy_time  = energy_time + (:energy_time * energy_time) / 100,
-                  stamina_time = stamina_time + (:stamina_time * stamina_time) / 100, ';
+                  stamina_max  = stamina_max + :stamina_max,';
             if($energySpent > 0) {
                 $sql .= 'energy_spent = :energy_spent, ';
                 $updateData[':energy_spent'] = $energySpent;
@@ -563,21 +559,42 @@
          * @return Response
          */
         public function restoreEnergy($userId) {
+            $settings = $this->getSettingList();
+
             /** @var $db PDO */
             $db = $this->getDataBase();
             $response = new Response();
+
+            $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'energy_time');
+            if($userBonus->isError()) {
+                return $userBonus;
+            }
+            $userBonus = $userBonus->getData();
+
+            $userData = $this->getEntityByEntityId($userId);
+            if($userData->isError()) {
+                return $userData;
+            }
+            $userData = $userData->getData();
+
+            $energyTimeBonus = isset($userBonus['bonus_value']) ? $userBonus['bonus_value'] : 0;
+            $interval = time() - strtotime($userData['energy_date']);
+            $newEnergy = $userData['energy'] + min(($userData['energy_max'] - $userData['energy']), $interval / ($settings['energy_time'] + $energyTimeBonus));
+            $newEnergyTime = strtotime($userData['energy_date']) + (floor($interval / $settings['energy_time'])) * $settings['energy_time'];
 
             $sql =
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  energy = energy + LEAST(TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV  energy_time, energy_max - energy),
-                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time SECOND)
+                  energy = :new_energy,
+                  energy_date = FROM_UNIXTIME(:new_energy_date)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
-                ':user_id'      => $userId
+                ':user_id'          => $userId,
+                ':new_energy'       => $newEnergy,
+                ':new_energy_date'  => $newEnergyTime
             ));
 
             $err = $query->errorInfo();
@@ -595,21 +612,46 @@
          * @return Response
          */
         public function restoreStamina($userId) {
+            $settings = $this->getSettingList();
+
             /** @var $db PDO */
             $db = $this->getDataBase();
             $response = new Response();
+
+            $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'stamina_time');
+            if($userBonus->isError()) {
+                return $userBonus;
+            }
+            $userBonus = $userBonus->getData();
+
+            $userData = $this->getEntityByEntityId($userId);
+            if($userData->isError()) {
+                return $userData;
+            }
+            $userData = $userData->getData();
+
+            $staminaTimeBonus = 0;
+            foreach($userBonus as $bonusRow) {
+                $staminaTimeBonus = isset($bonusRow['bonus_value']) ? ($staminaTimeBonus + $bonusRow['bonus_value']) : $staminaTimeBonus;
+            }
+
+            $interval = time() - strtotime($userData['stamina_date']);
+            $newStamina = $userData['stamina'] + min(($userData['stamina_max'] - $userData['stamina']), $interval / ($settings['stamina_time'] + $staminaTimeBonus));
+            $newStaminaTime = strtotime($userData['stamina_date']) + (floor($interval / $settings['stamina_time'])) * $settings['stamina_time'];
 
             $sql =
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  stamina = stamina + LEAST((TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time), stamina_max - stamina),
-                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time SECOND)
+                  stamina = :new_stamina,
+                  stamina_date = FROM_UNIXTIME(:new_stamina_date)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
-                ':user_id'      => $userId
+                ':user_id'           => $userId,
+                ':new_stamina'       => $newStamina,
+                ':new_stamina_date'  => $newStaminaTime
             ));
 
             $err = $query->errorInfo();
@@ -722,9 +764,7 @@
                     create_date,
                     award_date,
                     energy_date,
-                    stamina_date,
-                    energy_time,
-                    stamina_time)
+                    stamina_date)
                 VALUES
                    (:user_id,
                     :face_id,
@@ -744,9 +784,7 @@
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
-                    CURRENT_TIMESTAMP,
-                    :energy_time,
-                    :stamina_time)';
+                    CURRENT_TIMESTAMP)';
             $query = $db->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
@@ -759,9 +797,7 @@
                 ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
                 ':chips'        => $settings['start_chips'],
-                ':bucks'        => $settings['start_bucks'],
-                ':energy_time'  => $settings['energy_time'],
-                ':stamina_time' => $settings['stamina_time']
+                ':bucks'        => $settings['start_bucks']
             ));
 
             $err = $query->errorInfo();
