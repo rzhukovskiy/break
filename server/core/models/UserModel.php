@@ -577,10 +577,14 @@
             }
             $userData = $userData->getData();
 
-            $energyTimeBonus = isset($userBonus['bonus_value']) ? $userBonus['bonus_value'] : 0;
+            $energyTimeBonus = 0;
+            foreach($userBonus as $bonusRow) {
+                $energyTimeBonus = isset($bonusRow['bonus_value']) ? ($energyTimeBonus + $bonusRow['bonus_value']) : $energyTimeBonus;
+            }
             $interval = time() - strtotime($userData['energy_date']);
-            $newEnergy = $userData['energy'] + min(($userData['energy_max'] - $userData['energy']), $interval / ($settings['energy_time'] + $energyTimeBonus));
-            $newEnergyTime = strtotime($userData['energy_date']) + (floor($interval / $settings['energy_time'])) * $settings['energy_time'];
+            $energyTime = $settings['energy_time'] + $energyTimeBonus * $settings['energy_time']/100;
+            $newEnergy = $userData['energy'] + min(($userData['energy_max'] - $userData['energy']), floor($interval / $energyTime));
+            $newEnergyTime = strtotime($userData['energy_date']) + floor($interval / $energyTime) * $energyTime;
 
             $sql =
                 'UPDATE
@@ -636,8 +640,9 @@
             }
 
             $interval = time() - strtotime($userData['stamina_date']);
-            $newStamina = $userData['stamina'] + min(($userData['stamina_max'] - $userData['stamina']), $interval / ($settings['stamina_time'] + $staminaTimeBonus));
-            $newStaminaTime = strtotime($userData['stamina_date']) + (floor($interval / $settings['stamina_time'])) * $settings['stamina_time'];
+            $staminaTime = $settings['stamina_time'] + $staminaTimeBonus * $settings['stamina_time']/100;
+            $newStamina = $userData['stamina'] + min(($userData['stamina_max'] - $userData['stamina']), floor($interval / $staminaTime));
+            $newStaminaTime = strtotime($userData['stamina_date']) + floor($interval / $staminaTime) * $staminaTime;
 
             $sql =
                 'UPDATE

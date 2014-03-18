@@ -128,38 +128,57 @@
             $dataDb = $this->getDataBase();
             $response = new Response();
 
-            $userItem = UserItemModel::getInstance()->getEntityByEntityId($userItemId);
-            if($userItem->isError()) {
-                return $userItem;
-            }
-            $userItem = $userItem->getData();
+            if($userItemId) {
+                $userItem = UserItemModel::getInstance()->getEntityByEntityId($userItemId);
+                if($userItem->isError()) {
+                    return $userItem;
+                }
+                $userItem = $userItem->getData();
 
-            $itemData = ItemModel::getInstance()->getEntityByEntityId($userItem['item_id']);
-            if($itemData->isError()) {
-                return $itemData;
-            }
-            $itemData = $itemData->getData();
+                $itemData = ItemModel::getInstance()->getEntityByEntityId($userItem['item_id']);
+                if($itemData->isError()) {
+                    return $itemData;
+                }
+                $itemData = $itemData->getData();
 
-            $sql =
-                'INSERT INTO
-                    ' . $this->_table . '
+                $sql =
+                    'INSERT INTO
+                        ' . $this->_table . '
                     (user_id, slot_id, user_item_id, bonus_type, bonus_value)
                 VALUES
                     (:user_id, :slot_id, :user_item_id, :bonus_type, :bonus_value)
                 ON DUPLICATE KEY UPDATE
                     user_item_id = :user_item_id';
-            $query = $dataDb->prepare($sql);
-            $query->execute(array(
-                ':user_id'      => $userId,
-                ':slot_id'      => $slotId,
-                ':user_item_id' => $userItemId,
-                ':bonus_type'   => $itemData['bonus_type'],
-                ':bonus_value'  => $itemData['bonus_value']
-            ));
+                $query = $dataDb->prepare($sql);
+                $query->execute(array(
+                    ':user_id'      => $userId,
+                    ':slot_id'      => $slotId,
+                    ':user_item_id' => $userItemId,
+                    ':bonus_type'   => $itemData['bonus_type'],
+                    ':bonus_value'  => $itemData['bonus_value']
+                ));
 
-            $err = $query->errorInfo();
-            if($err[1] != null){
-                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+                $err = $query->errorInfo();
+                if($err[1] != null){
+                    $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+                }
+            } else {
+                $sql =
+                    'DELETE FROM
+                        ' . $this->_table . '
+                    WHERE
+                        user_id = :user_id AND
+                        slot_id = :slot_id';
+                $query = $dataDb->prepare($sql);
+                $query->execute(array(
+                    ':user_id'      => $userId,
+                    ':slot_id'      => $slotId
+                ));
+
+                $err = $query->errorInfo();
+                if($err[1] != null){
+                    $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+                }
             }
 
             return $response;
