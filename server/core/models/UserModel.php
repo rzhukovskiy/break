@@ -250,12 +250,14 @@
                 ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
                 ':bucks'        => isset($data['bucks']) ? $data['bucks'] : 0,
                 ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
+                ':chips_spent'  => isset($data['chips']) && $data['chips'] < 0  ? -1 * $data['chips'] : 0,
                 ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
                 ':stamina_max'  => $staminaMax,
                 ':wins'         => $wins,
                 ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
+                ':draws'        => isset($data['draws']) ? $data['draws'] : 0,
                 ':level'        => $level
             );
 
@@ -266,6 +268,7 @@
                   coins        = coins + :coins,
                   bucks        = bucks + :bucks,
                   chips        = chips + :chips,
+                  chips_spent  = chips + :chips_spent,
                   energy       = LEAST(energy + :energy, energy_max),
                   energy_max   = energy_max + :energy_max,
                   stamina      = LEAST(stamina + :stamina, stamina_max),
@@ -284,7 +287,8 @@
             }
             $sql .= 'wins         = wins + :wins,
                   battles      = battles + :battles,
-                  level        = level + :level
+                  level        = level + :level,
+                  draws        = draws + :draws
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND

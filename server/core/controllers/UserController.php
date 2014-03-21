@@ -38,8 +38,9 @@
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
-                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //туториал
-                'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //туториал
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //миссии
+                'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //награды
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
@@ -196,7 +197,27 @@
             $bet = $this->getRequest()->getParam('bet', 0);
             $opponent = $this->getRequest()->getParam('opponent', false);
 
-            UserModel::getInstance()->battleWin($this->getUserId(), $bet, $opponent)->send();
+            $res = UserModel::getInstance()->battleWin($this->getUserId(), $bet, $opponent);
+            if($res->isError()) {
+                $res->send();
+            }
+
+            UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->send();
+        }
+
+        /**
+         * Ничья в пвп
+         */
+        public function battleDrawAction() {
+            $data = array(
+                'draws' => 1
+            );
+
+            $res = UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
+            if($res->isError()) {
+                $res->send();
+            }
+            UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->send();
         }
 
         /**
@@ -214,7 +235,19 @@
          */
         public function takeStaminaAction() {
             $data = array(
-                'stamina' => -1 * $this->getRequest()->getParam('stamina', 0)
+                'stamina' => -1 * $this->getRequest()->getParam('stamina', 1)
+            );
+            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+        }
+
+        /**
+         * Уменьшение усталости
+         */
+        public function takeChipsAction() {
+            $data = array(
+                'chips' => -1 * $this->getRequest()->getParam('chips', 1)
             );
             UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
 
