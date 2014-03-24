@@ -202,7 +202,10 @@
                 $res->send();
             }
 
-            UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->send();
+            $res->setData(array(
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                'collections_id'         => UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->getData(), //предмет коллекции
+            ))->send();
         }
 
         /**
@@ -217,7 +220,11 @@
             if($res->isError()) {
                 $res->send();
             }
-            UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->send();
+
+            $res->setData(array(
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                'collections_id'         => UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->getData(), //предмет коллекции
+            ))->send();
         }
 
         /**

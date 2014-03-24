@@ -86,6 +86,8 @@
          * @return Response
          */
         public function giveUserCollections($userId) {
+            $settings = $this->getSettingList();
+
             $response = new Response();
 
             $collectionsData = CollectionsModel::getInstance()->getCollectionsIdByChance(rand(0, 100));;
@@ -106,7 +108,7 @@
             }
             $userCollections = $userCollections->getData();
 
-            if(isset($userCollections['amount']) && $userCollections['amount'] > 3) {
+            if(isset($userCollections['amount']) && $userCollections['amount'] + 1 >= $settings['collection_count_for_chip']) {
                 $amount = 0;
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array('chips' => 1));
                 if($response->isError()) {
@@ -121,7 +123,7 @@
                 return $response;
             }
 
-            $response->setData(array('collections_id' => $collectionsId));
+            $response->setData($collectionsId);
             return $response;
         }
 
