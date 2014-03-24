@@ -205,6 +205,7 @@
             $res->setData(array(
                 'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
                 'collections_id'         => UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
             ))->send();
         }
 
@@ -224,6 +225,7 @@
             $res->setData(array(
                 'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
                 'collections_id'         => UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
             ))->send();
         }
 
