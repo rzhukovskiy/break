@@ -123,13 +123,13 @@
             $response = new Response();
 
             $step = StepModel::getInstance()->getEntityByEntityId($stepId);
-            if($step->isError()) {
+            if($step->IsNotOk()) {
                 return $step;
             }
             $step = $step->getData();
 
             $userStep = $this->getUserStepByUserIdAndStepId($userId, $stepId);
-            if($userStep->isError()) {
+            if($userStep->IsNotOk()) {
                 return $userStep;
             }
             $userStep = $userStep->getData();
@@ -150,12 +150,12 @@
                     'bucks'         => $bucksCost,
                     'energy_spent'  => $energySpent
                 ));
-                if($updateResult->isError() && !$updateResult->isEmpty()) {
+                if($updateResult->IsNotOk() && !$updateResult->isEmpty()) {
                     return $updateResult;
                 }
 
                 $awardResult = UserModel::getInstance()->giveAward($userId, $step['award_id_' . $learningStepLevel]);
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
 
@@ -165,14 +165,14 @@
                     'energy'        => -1 * $energySpent,
                     'energy_spent'  => $energySpent
                 ));
-                if($updateResult->isError() && !$updateResult->isEmpty()) {
+                if($updateResult->IsNotOk() && !$updateResult->isEmpty()) {
                     return $updateResult;
                 }
 
                 $raiseResult = $this->raiseUserStepEnergy($userId, $stepId, $energySpent);
             }
 
-            if($raiseResult->isError()) {
+            if($raiseResult->IsNotOk()) {
                 return $raiseResult;
             }
             return $updateResult;
@@ -276,7 +276,7 @@
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);
-                    if($user->isError()) {
+                    if($user->IsNotOk()) {
                         return false;
                     }
                     $user = $user->getData();

@@ -21,6 +21,7 @@
             flashvars.uid = <?php echo $_REQUEST['viewer_id'] ?>;
             flashvars.auth_key = '<?php echo $_REQUEST['auth_key'] ?>';
             flashvars.user_info = '<?php echo json_encode($_REQUEST['api_result']) ?>';
+            flashvars.event_id = '<?php echo json_encode($_REQUEST['event_id']) ?>';
             flashvars.isLocal = "0";
 
             var d = new Date();

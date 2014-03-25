@@ -85,13 +85,13 @@
          * @param int $userId
          * @return Response
          */
-        public function giveUserCollections($userId) {
+        public function buyUserCollections($userId) {
             $settings = $this->getSettingList();
 
             $response = new Response();
 
             $collectionsData = CollectionsModel::getInstance()->getCollectionsIdByChance(rand(0, 100));;
-            if($collectionsData->isError()) {
+            if($collectionsData->IsNotOk()) {
                 return $collectionsData;
             }
             $collectionsData = $collectionsData->getData();
@@ -103,7 +103,7 @@
             $collectionsId = $collectionsData['id'];
 
             $userCollections = $this->getUserCollectionsByUserIdAndCollectionsId($userId, $collectionsId);
-            if($userCollections->isError()) {
+            if($userCollections->IsNotOk()) {
                 return $userCollections;
             }
             $userCollections = $userCollections->getData();
@@ -111,7 +111,7 @@
             if(isset($userCollections['amount']) && $userCollections['amount'] + 1 >= $settings['collection_count_for_chip']) {
                 $amount = 0;
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array('chips' => 1));
-                if($response->isError()) {
+                if($response->IsNotOk()) {
                     return $response;
                 }
             } else {
@@ -119,7 +119,7 @@
             }
 
             $response = $this->addUserCollections($userId, $collectionsId, $amount);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
@@ -146,7 +146,7 @@
                 VALUES
                     (:user_id, :collections_id, CURRENT_TIMESTAMP, :amount)
                 ON DUPLICATE KEY UPDATE
-                    amount = :amount';
+                    count = IF(amount > 0, amount + :amount, 0);';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,
@@ -158,6 +158,27 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
+            if($query->rowCount() < 1){
+                $response->setCode(Response::CODE_EMPTY);
+            }
+
+            return $response;
+        }
+
+        /**
+         * Добавить предмет
+         * @param int $userId
+         * @param string $collectionsId
+         * @param int $recipientId
+         * @return Response
+         */
+        public function giveUserCollections($userId, $recipientId, $collectionsId) {
+            $response = $this->addUserCollections($userId, $collectionsId, -1);
+            if($response->IsNotOk()) {
+                return $response;
+            }
+
+            $response = $this->addUserCollections($recipientId, $collectionsId, 1);
 
             return $response;
         }

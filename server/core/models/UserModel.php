@@ -130,20 +130,20 @@
             $settings = $this->getSettingList();
             $response = new Response();
             $user = $this->getEntityByEntityId($userId);
-            if($user->isError()) {
+            if($user->IsNotOk()) {
                 return $user;
             }
             $user = $user->getData();
 
             $level = LevelModel::getInstance()->getEntityByEntityId($user['level'] + 1);
-            if($level->isError()) {
+            if($level->IsNotOk()) {
                 return $level;
             }
             $level = $level->getData();
 
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
                 $awardResult = $this->giveAward($userId, $level['award']);
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
                 $data = array(
@@ -189,7 +189,7 @@
             $response = new Response();
 
             $award = AwardModel::getInstance()->getAwardByAwardId($awardId);
-            if($award->isError()) {
+            if($award->IsNotOk()) {
                 return $award;
             }
             $award = $award->getData();
@@ -200,14 +200,14 @@
 
             $updateResult = $this->updateUserByUserId($userId, $award);
 
-            if($updateResult->isError() && !$updateResult->isEmpty()) {
+            if($updateResult->IsNotOk() && !$updateResult->isEmpty()) {
                 return $updateResult;
             }
 
             if(isset($award['item_id']) && $award['item_id']) {
                 $response = UserItemModel::getInstance()->addUserItem($userId, $award['item_id']);
 
-                if($response->isError()) {
+                if($response->IsNotOk()) {
                     return $response;
                 }
             }
@@ -234,7 +234,7 @@
             $level       = 0;
             if($wins || $energySpent) {
                 $newData = $this->_raiseUserLevel($userId, $energySpent, $wins);
-                if($newData->isError()) {
+                if($newData->IsNotOk()) {
                     return $newData;
                 }
                 $newData = $newData->getData();
@@ -303,8 +303,8 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-            if($query->rowCount() < 1){
-                $response->setCode(Response::CODE_EMPTY)->setError('Not enough resources');
+            if($query->rowCount() < 1) {
+                $response->setCode(Response::CODE_EMPTY);
             }
 
             return $response;
@@ -360,7 +360,7 @@
         public function giveOffer($userId, $offerId, $credits) {
             $response = new Response();
             $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
-            if($offer->isError()) {
+            if($offer->IsNotOk()) {
                 return $offer;
             } else {
                 $offer = $offer->getData();
@@ -386,7 +386,7 @@
                 'wins'      => 1,
                 'battles'   => 1));
 
-            if($winResult->isError()) {
+            if($winResult->IsNotOk()) {
                 return $winResult;
             }
 
@@ -396,7 +396,7 @@
                     'row_wins'  => -1,
                     'battles'   => 1));
 
-                if($looseResult->isError()) {
+                if($looseResult->IsNotOk()) {
                     return $looseResult;
                 }
             }
@@ -417,7 +417,7 @@
                 'row_wins'  => -1,
                 'battles'   => 1));
 
-            if($winResult->isError()) {
+            if($winResult->IsNotOk()) {
                 return $winResult;
             }
 
@@ -428,7 +428,7 @@
                     'wins'      => 1,
                     'battles'   => 1));
 
-                if($looseResult->isError()) {
+                if($looseResult->IsNotOk()) {
                     return $looseResult;
                 }
             }
@@ -580,13 +580,13 @@
             $response = new Response();
 
             $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'energy_time');
-            if($userBonus->isError()) {
+            if($userBonus->IsNotOk()) {
                 return $userBonus;
             }
             $userBonus = $userBonus->getData();
 
             $userData = $this->getEntityByEntityId($userId);
-            if($userData->isError()) {
+            if($userData->IsNotOk()) {
                 return $userData;
             }
             $userData = $userData->getData();
@@ -637,13 +637,13 @@
             $response = new Response();
 
             $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'stamina_time');
-            if($userBonus->isError()) {
+            if($userBonus->IsNotOk()) {
                 return $userBonus;
             }
             $userBonus = $userBonus->getData();
 
             $userData = $this->getEntityByEntityId($userId);
-            if($userData->isError()) {
+            if($userData->IsNotOk()) {
                 return $userData;
             }
             $userData = $userData->getData();
@@ -693,7 +693,7 @@
 
             //получаем текущие данные пользователя
             $user = $this->getEntityByEntityId($userId);
-            if($user->isError()) {
+            if($user->IsNotOk()) {
                 return $user;
             }
             $user = $user->getData();
@@ -713,13 +713,13 @@
 
             //что мы должны дать пользователю за указанное количество дней
             $award = DailyAwardModel::getInstance()->getAwardByDay($day);
-            if($award->isError()) {
+            if($award->IsNotOk()) {
                 return $award;
             }
             $award = $award->getData();
 
             $awardResponse = $this->giveAward($userId, $award['award_id']);
-            if($awardResponse->isError()) {
+            if($awardResponse->IsNotOk()) {
                 return $awardResponse;
             }
 
@@ -825,37 +825,37 @@
             }
 
             $response = UserSettingsModel::getInstance()->updateSettingsByUserId($userId, array('music' => 1, 'sfx' => 1, 'lang' => 'ru'));
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_body']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_head']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_hands']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_legs']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_shoes']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_music']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 

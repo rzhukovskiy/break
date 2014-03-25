@@ -92,7 +92,7 @@
             $response = new Response();
 
             $consumables = ConsumablesModel::getInstance()->getEntityByEntityId($consumablesId);
-            if($consumables->isError()) {
+            if($consumables->IsNotOk()) {
                 return $consumables;
             }
             $consumables = $consumables->getData();
@@ -102,13 +102,13 @@
                     'coins'  => -1 * $consumables['coins'] * $count,
                     'bucks'  => -1 * $consumables['bucks'] * $count
                 ));
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
             }
 
             $addResult = $this->addUserConsumables($userId, $consumablesId, $count);
-            if($addResult->isError()) {
+            if($addResult->IsNotOk()) {
                 return $addResult;
             }
             $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(), $addResult->getData()));
@@ -127,14 +127,14 @@
             $response = new Response();
 
             $consumables = ConsumablesModel::getInstance()->getEntityByEntityId($consumablesId);
-            if($consumables->isError()) {
+            if($consumables->IsNotOk()) {
                 return $consumables;
             }
             $consumables = $consumables->getData();
 
             if($consumables['bonus_type'] && $consumables['bonus_type'] != 'client' && $consumables['bonus_value']) {
                 $awardResult = UserModel::getInstance()->updateUserByUserId($userId, array($consumables['bonus_type'] => $consumables['bonus_value']));
-                if($awardResult->isError() && !$awardResult->isEmpty()) {
+                if($awardResult->IsNotOk() && !$awardResult->isEmpty()) {
                     return $awardResult;
                 }
             }
@@ -186,7 +186,7 @@
                 VALUES
                     (:user_id, :consumables_id, :count, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    count = count + :count';
+                    count = IF(count > 0, count + :count, 0);';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,
@@ -198,6 +198,27 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
+            if($query->rowCount() < 1){
+                $response->setCode(Response::CODE_EMPTY);
+            }
+
+            return $response;
+        }
+
+        /**
+         * Добавить предмет
+         * @param int $userId
+         * @param string $consumablesId
+         * @param int $recipientId
+         * @return Response
+         */
+        public function giveUserConsumables($userId, $recipientId, $consumablesId) {
+            $response = $this->addUserConsumables($userId, $consumablesId, -1);
+            if($response->IsNotOk()) {
+                return $response;
+            }
+
+            $response = $this->addUserConsumables($recipientId, $consumablesId, 1);
 
             return $response;
         }

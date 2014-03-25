@@ -58,7 +58,7 @@
          * Является ли ошибочным. Ошибочный - любой не ок
          * @return bool
          */
-        public function isError() {
+        public function IsNotOk() {
             return $this->_responseCode != self::CODE_OK;
         }
 

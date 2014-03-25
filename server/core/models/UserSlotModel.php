@@ -130,13 +130,13 @@
 
             if($userItemId) {
                 $userItem = UserItemModel::getInstance()->getEntityByEntityId($userItemId);
-                if($userItem->isError()) {
+                if($userItem->IsNotOk()) {
                     return $userItem;
                 }
                 $userItem = $userItem->getData();
 
                 $itemData = ItemModel::getInstance()->getEntityByEntityId($userItem['item_id']);
-                if($itemData->isError()) {
+                if($itemData->IsNotOk()) {
                     return $itemData;
                 }
                 $itemData = $itemData->getData();

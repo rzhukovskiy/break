@@ -1,25 +1,25 @@
 <?php
     /**
-     * работа с user_tutorial таблицей. прогресс в туториале
+     * работа с user_scores таблицей. очки в мини-играх
      */
-    class UserAwardModel extends BaseModel {
-        protected $_table = 'user_award';
+    class UserEventModel extends BaseModel {
+        protected $_table = 'user_event';
 
         /**
          * Создать самого себя
          *
-         * @return UserAwardModel
+         * @return UserEventModel
          */
         public static function getInstance() {
             return parent::getInstance();
         }
 
         /**
-         * Список шагов тутора у определенного пользователя
+         * Очки в разных играх у определенного пользователя
          * @param int $userId
          * @return Response
          */
-        public function getUserAwardListByUserId($userId) {
+        public function getUserEventListByUserId($userId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -45,65 +45,44 @@
             return $response;
         }
 
-
         /**
-         * Получить конкретный тутор у конкретного пользователя
+         * Очки в разных играх у определенного пользователя
          * @param int $userId
-         * @param string $awardId
          * @return Response
          */
-        public function giveAward($userId, $awardId) {
-            $response = $this->saveAward($userId, $awardId);
-            if($response->IsNotOk()) {
-                return $response;
-            }
-
-            $response = UserModel::getInstance()->giveAward($userId, $awardId);
-            return $response;
-        }
-
-        /**
-         * Получить конкретный тутор у конкретного пользователя
-         * @param int $userId
-         * @param string $awardId
-         * @return Response
-         */
-        public function getUserAwardByUserIdAndAwardId($userId, $awardId) {
+        public function checkUserEventListByUserId($userId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
 
             $sql =
-                'SELECT
-                    *
-                FROM
+                'UPDATE
                     ' . $this->_table . '
+                SET
+                    checked = 1
                 WHERE
-                    user_id = :user_id AND
-                    award_id = :award_id
-                LIMIT 1';
+                    user_id = :user_id';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
-                ':user_id' => $userId,
-                ':award_id' => $awardId,
+                ':user_id' => $userId
             ));
 
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
-            } else {
-                $response->setData($query->fetch(PDO::FETCH_ASSOC));
             }
+
             return $response;
         }
 
         /**
-         * Сохранить шаг тутора
+         * Сохранить очки
          * @param int $userId
-         * @param string $awardId
+         * @param string $eventType
+         * @param string $objectId
          * @return Response
          */
-        public function saveAward($userId, $awardId) {
+        public function saveUserEvent($userId, $eventType, $objectId) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -111,17 +90,18 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, award_id, create_date)
+                    (user_id, event_type, object_id, create_date)
                 VALUES
-                    (:user_id, :award_id, CURRENT_TIMESTAMP)';
+                    (:user_id, :event_type, :object_id, CURRENT_TIMESTAMP)';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
-                ':user_id'      => $userId,
-                ':award_id'   => $awardId
+                ':user_id'         => $userId,
+                ':event_type'      => $eventType,
+                ':object_id'       => $objectId
             ));
 
             $err = $query->errorInfo();
-            if($err[1] != null || $query->rowCount() < 1){
+            if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
 
