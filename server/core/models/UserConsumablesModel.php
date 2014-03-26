@@ -186,7 +186,7 @@
                 VALUES
                     (:user_id, :consumables_id, :count, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    count = IF(count > 0, count + :count, 0);';
+                    count = IF(count + :count > 0, count + :count, 0);';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,

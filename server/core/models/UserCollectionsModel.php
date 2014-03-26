@@ -146,7 +146,7 @@
                 VALUES
                     (:user_id, :collections_id, CURRENT_TIMESTAMP, :amount)
                 ON DUPLICATE KEY UPDATE
-                    count = IF(amount > 0, amount + :amount, 0);';
+                    count = IF(amount + :amount > 0, amount + :amount, 0);';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,
