@@ -81,6 +81,30 @@
         }
 
         /**
+         * Сохранение сообщение пользователя
+         */
+        public function saveLogAction() {
+            $message = $this->getRequest()->getParam('message', false);
+            $nickname = $this->getRequest()->getParam('nickname', 0);
+
+            UserLogModel::getInstance()->saveUserLog($this->getUserId(), $message, $nickname)->send();
+        }
+
+        /**
+         * Получение сообщений
+         */
+        public function getLogListAction() {
+            UserLogModel::getInstance()->getUserLogList()->send();
+        }
+
+        /**
+         * Получение сообщений
+         */
+        public function deleteLogListAction() {
+            UserLogModel::getInstance()->deleteUserLogList()->send();
+        }
+
+        /**
          * Сохранение события пользователя
          */
         public function saveEventAction() {
@@ -226,9 +250,9 @@
             }
 
             $res->setData(array(
-                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
-                'collections_id'         => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'collections_id'            => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
                 'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
             ))->send();
         }
 
@@ -246,9 +270,9 @@
             }
 
             $res->setData(array(
-                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
-                'collections_id'         => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'collections_id'            => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
                 'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
             ))->send();
         }
 
