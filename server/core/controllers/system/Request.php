@@ -83,8 +83,6 @@
 
                 if($accessKey != md5($internalKey . md5($internalKey . $ts . $data))) {
                     return Response::CODE_NOT_AUTH;
-                } elseif(abs($time - time()) > $requestTimeout) {
-                    return Response::REQUEST_TIMEOUT;
                 }
                 return Response::CODE_OK;
             }
