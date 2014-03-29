@@ -251,7 +251,7 @@
             $response = new Response();
 
             $request = $this->getRequestByRequestId($requestId, $userId);
-            if($request->isError()) {
+            if($request->IsNotOk()) {
                 return $request;
             }
             $request = $request->getData();
@@ -330,7 +330,7 @@
                         return false;
                     }
                     $response = UserModel::getInstance()->giveAward($requestData['user_id_to'], $requestData['object_id']);
-                    if($response->isError()) {
+                    if($response->IsNotOk()) {
                         return false;
                     }
                     return true;
@@ -340,7 +340,7 @@
                         return false;
                     }
                     $response = UserItemModel::getInstance()->addUserItem($requestData['user_id_to'], $requestData['object_id']);
-                    if($response->isError()) {
+                    if($response->IsNotOk()) {
                         return false;
                     }
                     return true;

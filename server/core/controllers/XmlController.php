@@ -21,11 +21,11 @@
                 if(!is_file($fullFilename) || substr($fullFilename, -3) != 'xml' || $filename == '_files.xml') {
                     continue;
                 } elseif($filename == 'step.xml') {
-                    if(!$this->_createStepTable($fullFilename)->isError()) {
+                    if(!$this->_createStepTable($fullFilename)->IsNotOk()) {
                         $tableCount++;
                     }
                 } else {
-                    if(!$this->_createTableFromXmlFile($fullFilename)->isError()) {
+                    if(!$this->_createTableFromXmlFile($fullFilename)->IsNotOk()) {
                         $tableCount++;
                     }
                 }

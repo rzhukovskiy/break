@@ -14,6 +14,30 @@ social = {
     inviteFriends:function() {
         VK.callMethod("showInviteBox");
     },
+    getAudioList:function(offset, count) {
+        VK.api("audio.get", {offset: offset, count: count}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    getGroupAudioList:function(group_id, offset, count) {
+        VK.api("audio.get", {owner_id : -1 * group_id, offset: offset, count: count}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    isMember:function() {
+        VK.api("groups.isMember", {group_id: "bb1vs1"}, function(response) {
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    isInstalled:function() {
+        VK.api("account.getAppPermissions", function(response) {
+            response.response = response.response & 256;
+            thisMovie("application").sendFromJS( JSON.stringify(response) );
+        });
+    },
+    addLeft:function() {
+        VK.callMethod("showSettingsBox", 256);
+    },
     /**
      * Список всех друзей
      */

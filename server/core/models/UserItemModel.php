@@ -92,12 +92,12 @@
             $response = new Response();
 
             $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
-            if($item->isError()) {
+            if($item->IsNotOk()) {
                 return $item;
             }
             $item = $item->getData();
 
-            if(!$this->_checkItemConditions($userId, $item)) {
+            if(!$this->_checkItemConditions($userId, $itemId)) {
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong conditions');
             }
 
@@ -106,13 +106,13 @@
                     'coins'  => -1 * $item['coins'],
                     'bucks'  => -1 * $item['bucks']
                 ));
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
             }
 
             $addResult = $this->addUserItem($userId, $itemId, $color);
-            if($addResult->isError()) {
+            if($addResult->IsNotOk()) {
                 return $addResult;
             }
             $response->setData(array_merge(UserModel::getInstance()->getEntityByEntityId($userId)->getData(), $addResult->getData()));
@@ -130,13 +130,13 @@
             $response = new Response();
 
             $userItem = UserItemModel::getInstance()->getEntityByEntityId($userItemId);
-            if($userItem->isError()) {
+            if($userItem->IsNotOk()) {
                 return $userItem;
             }
             $userItem = $userItem->getData();
 
             $item = ItemModel::getInstance()->getEntityByEntityId($userItem['item_id']);
-            if($item->isError()) {
+            if($item->IsNotOk()) {
                 return $item;
             }
             $item = $item->getData();
@@ -146,13 +146,13 @@
                     'coins'  => $item['coins'] / 2,
                     'bucks'  => $item['bucks'] / 2
                 ));
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
             }
 
             $addResult = $this->removeEntityById($userId, $userItemId);
-            if($addResult->isError()) {
+            if($addResult->IsNotOk()) {
                 return $addResult;
             }
             $response->setData(UserModel::getInstance()->getEntityByEntityId($userId)->getData());
@@ -162,11 +162,17 @@
         /**
          * применяем предмет
          * @param int $userId
-         * @param array $item
+         * @param string $itemId
          * @return Response
          */
-        private function _applyUserItem($userId, $item) {
+        private function _applyUserItem($userId, $itemId) {
             $response = new Response();
+
+            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
+            if($item->IsNotOk()) {
+                return $item;
+            }
+            $item = $item->getData();
 
             if($item['bonus_type'] and $item['bonus_type'] != 'client' && $item['bonus_value']) {
                 $response = UserModel::getInstance()->updateUserByUserId($userId, array($item['bonus_type'] => $item['bonus_value']));
@@ -186,14 +192,6 @@
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
-
-            $item = ItemModel::getInstance()->getEntityByEntityId($itemId);
-            if($item->isError()) {
-                return $item;
-            }
-            $item = $item->getData();
-
-            $response = $this->_applyUserItem($userId, $item);
 
             $sql =
                 'INSERT INTO
@@ -223,11 +221,17 @@
          */
         private function _checkItemConditions($userId, $item)
         {
+            $item = ItemModel::getInstance()->getEntityByEntityId($item);
+            if($item->IsNotOk()) {
+                return false;
+            }
+
+            $item = $item->getData();
             switch($item['condition_type']) {
                 case 'step':
                     list($stepId, $stepLevel) = explode(':', $item['condition_value']);
                     $conditionStep = UserStepModel::getInstance()->getUserStepByUserIdAndStepId($userId, $stepId);
-                    if($conditionStep->isError()) {
+                    if($conditionStep->IsNotOk()) {
                         return $conditionStep;
                     }
                     $conditionStep = $conditionStep->getData();
@@ -238,7 +242,7 @@
                     break;
                 default:
                     $user = UserModel::getInstance()->getEntityByEntityId($userId);
-                    if($user->isError()) {
+                    if($user->IsNotOk()) {
                         return false;
                     }
                     $user = $user->getData();

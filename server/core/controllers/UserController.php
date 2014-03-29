@@ -1,8 +1,6 @@
 <?php
     /**
      * Основной контроллер работающий с пользователем
-     * Пример вызова из адресной строки
-     * http://bubble.battlekeys.com/server/index.php/user/progress?mission_id=loc1mis2&scores=100000
      * Данные можно передавать как в ПОСТ так и в ГЕТ массивах
      */
     class UserController extends BaseController {
@@ -24,7 +22,7 @@
             $userModel = UserModel::getInstance();
             $user = $userModel->getEntityByEntityId($this->getUserId());
 
-            if($user->isError() || !$user->getData()) {
+            if($user->IsNotOk() || !$user->getData()) {
                 $user->send();
             }
 
@@ -38,6 +36,9 @@
                 'user_settings'             => UserSettingsModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //настройки
                 'user_news_list'            => UserNewsModel::getInstance()->getUserNewsListByUserId($this->getUserId())->getData(), //новинки
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //миссии
+                'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //награды
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
                 'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($this->getUserId())->getData(), //очки
@@ -80,12 +81,78 @@
         }
 
         /**
+         * Сохранение сообщение пользователя
+         */
+        public function saveLogAction() {
+            $message = $this->getRequest()->getParam('message', false);
+            $nickname = $this->getRequest()->getParam('nickname', 0);
+
+            UserLogModel::getInstance()->saveUserLog($this->getUserId(), $message, $nickname)->send();
+        }
+
+        /**
+         * Получение сообщений
+         */
+        public function getLogListAction() {
+            UserLogModel::getInstance()->getUserLogList()->send();
+        }
+
+        /**
+         * Получение сообщений
+         */
+        public function deleteLogListAction() {
+            UserLogModel::getInstance()->deleteUserLogList()->send();
+        }
+
+        /**
+         * Сохранение события пользователя
+         */
+        public function saveEventAction() {
+            $eventType = $this->getRequest()->getParam('game_id', false);
+            $objectId = $this->getRequest()->getParam('object_id', 0);
+            $userId = $this->getRequest()->getParam('user_id', $this->getUserId());
+
+            UserEventModel::getInstance()->saveUserEvent($userId, $eventType, $objectId)->send();
+        }
+
+        /**
+         * Получение событий пользователя
+         */
+        public function getEventListAction() {
+            UserEventModel::getInstance()->getUserEventListByUserId($this->getUserId())->send();
+        }
+
+        /**
+         * Получение событий пользователя
+         */
+        public function checkEventListAction() {
+            UserEventModel::getInstance()->checkUserEventListByUserId($this->getUserId())->send();
+        }
+
+        /**
          * Сохранение тутора пользователя
          */
         public function saveTutorialStepAction() {
             $tutorialId = $this->getRequest()->getParam('tutorial_id', false);
 
             UserTutorialModel::getInstance()->saveTutorial($this->getUserId(), $tutorialId)->send();
+        }
+
+        /**
+         * Сохранение тутора пользователя
+         */
+        public function saveMissionAction() {
+            $missionId = $this->getRequest()->getParam('mission_id', false);
+
+            $res = UserMissionModel::getInstance()->saveMission($this->getUserId(), $missionId);
+
+            if($res->IsNotOk()) {
+                $res->send();
+            }
+            $res->setData(array(
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //миссии
+            ))->send();
         }
 
         /**
@@ -96,11 +163,17 @@
             $hairId = $this->getRequest()->getParam('hair_id', 1);
             $nickname = $this->getRequest()->getParam('nickname', $this->getUserId());
 
-            UserModel::getInstance()->updateUserAppearanceByUserId($this->getUserId(), array(
+            $res = UserModel::getInstance()->updateUserAppearanceByUserId($this->getUserId(), array(
                 'face_id' => $faceId,
                 'hair_id' => $hairId,
                 'nickname' => $nickname
-            ))->send();
+            ));
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+            }
         }
 
         /**
@@ -152,11 +225,15 @@
             $music = $this->getRequest()->getParam('music', 1);
             $sfx = $this->getRequest()->getParam('sfx', 1);
             $lang = $this->getRequest()->getParam('lang', 1);
+            $bet = $this->getRequest()->getParam('bet', 50);
+            $moves = $this->getRequest()->getParam('turns', 1);
 
             UserSettingsModel::getInstance()->updateSettingsByUserId($this->getUserId(), array(
                 'music' => $music,
                 'sfx' => $sfx,
-                'lang' => $lang
+                'lang' => $lang,
+                'bet' => $bet,
+                'turns' => $moves
             ))->send();
         }
 
@@ -167,7 +244,36 @@
             $bet = $this->getRequest()->getParam('bet', 0);
             $opponent = $this->getRequest()->getParam('opponent', false);
 
-            UserModel::getInstance()->battleWin($this->getUserId(), $bet, $opponent)->send();
+            $res = UserModel::getInstance()->battleWin($this->getUserId(), $bet, $opponent);
+            if($res->IsNotOk()) {
+                $res->send();
+            }
+
+            $res->setData(array(
+                'collections_id'            => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+            ))->send();
+        }
+
+        /**
+         * Ничья в пвп
+         */
+        public function battleDrawAction() {
+            $data = array(
+                'draws' => 1
+            );
+
+            $res = UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
+            if($res->IsNotOk()) {
+                $res->send();
+            }
+
+            $res->setData(array(
+                'collections_id'            => UserCollectionsModel::getInstance()->buyUserCollections($this->getUserId())->getData(), //предмет коллекции
+                'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
+                'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+            ))->send();
         }
 
         /**
@@ -185,7 +291,19 @@
          */
         public function takeStaminaAction() {
             $data = array(
-                'stamina' => -1 * $this->getRequest()->getParam('stamina', 0)
+                'stamina' => -1 * $this->getRequest()->getParam('stamina', 1)
+            );
+            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+        }
+
+        /**
+         * Уменьшение усталости
+         */
+        public function takeChipsAction() {
+            $data = array(
+                'chips' => -1 * $this->getRequest()->getParam('chips', 1)
             );
             UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data);
 
@@ -231,7 +349,7 @@
         public function buyConsumablesAction() {
             $res = UserConsumablesModel::getInstance()->buyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false), $this->getRequest()->getParam('count', 1));
 
-            if($res->isError()) {
+            if($res->IsNotOk()) {
                 $res->send();
             } else {
                 $res->setData(array(
@@ -242,12 +360,50 @@
         }
 
         /**
+         * Передача предмета
+         */
+        public function giveConsumablesAction() {
+            $recipientId    = $this->getRequest()->getParam('recipient_id', false);
+            $consumablesId  = $this->getRequest()->getParam('consumables_id', false);
+
+            $res = UserConsumablesModel::getInstance()->giveUserConsumables($this->getUserId(), $recipientId, $consumablesId);
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
+        }
+
+        /**
+         * Передача предмета
+         */
+        public function giveCollectionsAction() {
+            $recipientId    = $this->getRequest()->getParam('recipient_id', false);
+            $collectionsId  = $this->getRequest()->getParam('collections_id', false);
+
+            $res = UserCollectionsModel::getInstance()->giveUserCollections($this->getUserId(), $recipientId, $collectionsId);
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
+        }
+
+        /**
          * Покупка предмета
          */
         public function applyConsumablesAction() {
             $res = UserConsumablesModel::getInstance()->applyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false));
 
-            if($res->isError()) {
+            if($res->IsNotOk()) {
                 $res->send();
             } else {
                 $res->setData(array(
@@ -289,24 +445,21 @@
         }
 
         /**
-         * Даем награду. Не забыть убрать из продакшена
+         * Даем награду.
          */
-        public function awardAction() {
-            $data = array(
-                'coins'         => $this->getRequest()->getParam('coins') ? $this->getRequest()->getParam('coins') : 0,
-                'chips'        => $this->getRequest()->getParam('chips') ? $this->getRequest()->getParam('chips') : 0,
-                'energy'       => $this->getRequest()->getParam('energy') ? $this->getRequest()->getParam('energy') : 0,
-                'energy_max'   => $this->getRequest()->getParam('energy_max') ? $this->getRequest()->getParam('energy_max') : 0,
-                'stamina'      => $this->getRequest()->getParam('stamina') ? $this->getRequest()->getParam('stamina') : 0,
-                'stamina_max'  => $this->getRequest()->getParam('stamina_max') ? $this->getRequest()->getParam('stamina_max') : 0,
-                'energy_time'  => $this->getRequest()->getParam('energy_time') ? $this->getRequest()->getParam('energy_time') : 0,
-                'stamina_time' => $this->getRequest()->getParam('stamina_time') ? $this->getRequest()->getParam('stamina_time') : 0,
-                'energy_spent' => $this->getRequest()->getParam('energy_spent') ? $this->getRequest()->getParam('energy_spent') : 0,
-                'wins'         => $this->getRequest()->getParam('wins') ? $this->getRequest()->getParam('wins') : 0,
-                'battles'      => $this->getRequest()->getParam('battles') ? $this->getRequest()->getParam('battles') : 0,
-                'level'        => $this->getRequest()->getParam('level') ? $this->getRequest()->getParam('level') : 0,
-            );
-            UserModel::getInstance()->updateUserByUserId($this->getUserId(), $data)->send();
+        public function giveAwardAction() {
+            $awardId = $this->getRequest()->getParam('award_id', 'wrong_award');
+
+            $res = UserAwardModel::getInstance()->giveAward($this->getUserId(), $awardId);
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //миссии
+                ))->send();
+            }
         }
 
         /**
@@ -314,7 +467,7 @@
          */
         public function learnStepAction() {
             $res = UserStepModel::getInstance()->trainUserStep($this->getUserId(), $this->getRequest()->getParam('step_id', false), $this->getRequest()->getParam('energy_spent', 0));
-            if($res->isError()) {
+            if($res->IsNotOk()) {
                 $res->send();
             } else {
                 $this->getAction();
@@ -330,7 +483,7 @@
 
             //Восстанавливаем энергию, если прошло более заданного времени
             $res = $userModel->restoreEnergy($this->getUserId());
-            if($res->isError()) {
+            if($res->IsNotOk()) {
                 return $res;
             }
             return $userModel->restoreStamina($this->getUserId());

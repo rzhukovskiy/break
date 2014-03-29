@@ -1,5 +1,5 @@
 <?php
-    /**
+/**
      * Работа с таблицей amulet - амулеты в игре
      */
     class ItemModel extends BaseModel {

@@ -60,24 +60,90 @@
             return $response;
         }
 
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserLevelList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT level, count(id) as amount FROM ' . $this->_table . ' GROUP BY level';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserCoinsList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT count(id) as amount, (coins div 500) as hundreds FROM  ' . $this->_table . '  GROUP BY hundreds';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
+        /**
+         * Получить список пользователей по уровням
+         * @return Response
+         */
+        public function getUserBucksList() {
+            /** @var $gameDb PDO */
+            $gameDb = $this->getGameBase();
+            $response = new Response();
+
+            $sql = 'SELECT count(id) as amount, (bucks div 5) as hundreds FROM  ' . $this->_table . '  GROUP BY hundreds';
+            $query = $gameDb->prepare($sql);
+            $query->execute();
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            } else {
+                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+            }
+            return $response;
+        }
+
         private function _raiseUserLevel($userId, $energySpent, $wins) {
             $settings = $this->getSettingList();
             $response = new Response();
             $user = $this->getEntityByEntityId($userId);
-            if($user->isError()) {
+            if($user->IsNotOk()) {
                 return $user;
             }
             $user = $user->getData();
 
             $level = LevelModel::getInstance()->getEntityByEntityId($user['level'] + 1);
-            if($level->isError()) {
+            if($level->IsNotOk()) {
                 return $level;
             }
             $level = $level->getData();
 
             if(($user['energy_spent'] + $energySpent >= $level['energy']) && ($user['wins'] + $wins >= $level['wins'])) {
                 $awardResult = $this->giveAward($userId, $level['award']);
-                if($awardResult->isError()) {
+                if($awardResult->IsNotOk()) {
                     return $awardResult;
                 }
                 $data = array(
@@ -123,7 +189,7 @@
             $response = new Response();
 
             $award = AwardModel::getInstance()->getAwardByAwardId($awardId);
-            if($award->isError()) {
+            if($award->IsNotOk()) {
                 return $award;
             }
             $award = $award->getData();
@@ -134,14 +200,14 @@
 
             $updateResult = $this->updateUserByUserId($userId, $award);
 
-            if($updateResult->isError() && !$updateResult->isEmpty()) {
+            if($updateResult->IsNotOk() && !$updateResult->isEmpty()) {
                 return $updateResult;
             }
 
             if(isset($award['item_id']) && $award['item_id']) {
                 $response = UserItemModel::getInstance()->addUserItem($userId, $award['item_id']);
 
-                if($response->isError()) {
+                if($response->IsNotOk()) {
                     return $response;
                 }
             }
@@ -168,7 +234,7 @@
             $level       = 0;
             if($wins || $energySpent) {
                 $newData = $this->_raiseUserLevel($userId, $energySpent, $wins);
-                if($newData->isError()) {
+                if($newData->IsNotOk()) {
                     return $newData;
                 }
                 $newData = $newData->getData();
@@ -184,14 +250,14 @@
                 ':coins'        => isset($data['coins']) ? $data['coins'] : 0,
                 ':bucks'        => isset($data['bucks']) ? $data['bucks'] : 0,
                 ':chips'        => isset($data['chips']) ? $data['chips'] : 0,
+                ':chips_spent'  => isset($data['chips']) && $data['chips'] < 0  ? -1 * $data['chips'] : 0,
                 ':energy'       => isset($data['energy']) ? $data['energy'] : 0,
                 ':energy_max'   => isset($data['energy_max']) ? $data['energy_max'] : 0,
                 ':stamina'      => isset($data['stamina']) ? $data['stamina'] : 0,
                 ':stamina_max'  => $staminaMax,
-                ':energy_time'  => isset($data['energy_time']) ? $data['energy_time'] : 0,
-                ':stamina_time' => isset($data['stamina_time']) ? $data['stamina_time'] : 0,
                 ':wins'         => $wins,
                 ':battles'      => isset($data['battles']) ? $data['battles'] : 0,
+                ':draws'        => isset($data['draws']) ? $data['draws'] : 0,
                 ':level'        => $level
             );
 
@@ -202,12 +268,11 @@
                   coins        = coins + :coins,
                   bucks        = bucks + :bucks,
                   chips        = chips + :chips,
+                  chips_spent  = chips + :chips_spent,
                   energy       = LEAST(energy + :energy, energy_max),
                   energy_max   = energy_max + :energy_max,
                   stamina      = LEAST(stamina + :stamina, stamina_max),
-                  stamina_max  = stamina_max + :stamina_max,
-                  energy_time  = energy_time + (:energy_time * energy_time) / 100,
-                  stamina_time = stamina_time + (:stamina_time * stamina_time) / 100, ';
+                  stamina_max  = stamina_max + :stamina_max,';
             if($energySpent > 0) {
                 $sql .= 'energy_spent = :energy_spent, ';
                 $updateData[':energy_spent'] = $energySpent;
@@ -222,7 +287,8 @@
             }
             $sql .= 'wins         = wins + :wins,
                   battles      = battles + :battles,
-                  level        = level + :level
+                  level        = level + :level,
+                  draws        = draws + :draws
                 WHERE
                   id = :user_id AND
                   coins + :coins >= 0 AND
@@ -237,8 +303,8 @@
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
-            if($query->rowCount() < 1){
-                $response->setCode(Response::CODE_EMPTY)->setError('Not enough resources');
+            if($query->rowCount() < 1) {
+                $response->setCode(Response::CODE_EMPTY);
             }
 
             return $response;
@@ -294,7 +360,7 @@
         public function giveOffer($userId, $offerId, $credits) {
             $response = new Response();
             $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
-            if($offer->isError()) {
+            if($offer->IsNotOk()) {
                 return $offer;
             } else {
                 $offer = $offer->getData();
@@ -320,7 +386,7 @@
                 'wins'      => 1,
                 'battles'   => 1));
 
-            if($winResult->isError()) {
+            if($winResult->IsNotOk()) {
                 return $winResult;
             }
 
@@ -330,7 +396,7 @@
                     'row_wins'  => -1,
                     'battles'   => 1));
 
-                if($looseResult->isError()) {
+                if($looseResult->IsNotOk()) {
                     return $looseResult;
                 }
             }
@@ -351,7 +417,7 @@
                 'row_wins'  => -1,
                 'battles'   => 1));
 
-            if($winResult->isError()) {
+            if($winResult->IsNotOk()) {
                 return $winResult;
             }
 
@@ -362,7 +428,7 @@
                     'wins'      => 1,
                     'battles'   => 1));
 
-                if($looseResult->isError()) {
+                if($looseResult->IsNotOk()) {
                     return $looseResult;
                 }
             }
@@ -467,6 +533,36 @@
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
             }
 
+            $sql = 'DELETE FROM user_mission WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
+            $sql = 'DELETE FROM user_award WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
+            $sql = 'DELETE FROM user_collections WHERE user_id = :user_id';
+            $query = $db->prepare($sql);
+            $query->execute(array(
+                ':user_id' => $userId
+            ));
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
             return $response;
         }
 
@@ -477,21 +573,46 @@
          * @return Response
          */
         public function restoreEnergy($userId) {
+            $settings = $this->getSettingList();
+
             /** @var $db PDO */
             $db = $this->getDataBase();
             $response = new Response();
+
+            $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'energy_time');
+            if($userBonus->IsNotOk()) {
+                return $userBonus;
+            }
+            $userBonus = $userBonus->getData();
+
+            $userData = $this->getEntityByEntityId($userId);
+            if($userData->IsNotOk()) {
+                return $userData;
+            }
+            $userData = $userData->getData();
+
+            $energyTimeBonus = 0;
+            foreach($userBonus as $bonusRow) {
+                $energyTimeBonus = isset($bonusRow['bonus_value']) ? ($energyTimeBonus + $bonusRow['bonus_value']) : $energyTimeBonus;
+            }
+            $interval = time() - strtotime($userData['energy_date']);
+            $energyTime = $settings['energy_time'] + $energyTimeBonus * $settings['energy_time']/100;
+            $newEnergy = $userData['energy'] + min(($userData['energy_max'] - $userData['energy']), floor($interval / $energyTime));
+            $newEnergyTime = strtotime($userData['energy_date']) + floor($interval / $energyTime) * $energyTime;
 
             $sql =
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  energy = energy + LEAST(TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV  energy_time, energy_max - energy),
-                  energy_date = DATE_ADD(energy_date, INTERVAL (TIMESTAMPDIFF(SECOND, energy_date, CURRENT_TIMESTAMP) DIV energy_time) * energy_time SECOND)
+                  energy = :new_energy,
+                  energy_date = FROM_UNIXTIME(:new_energy_date)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
-                ':user_id'      => $userId
+                ':user_id'          => $userId,
+                ':new_energy'       => $newEnergy,
+                ':new_energy_date'  => $newEnergyTime
             ));
 
             $err = $query->errorInfo();
@@ -509,21 +630,47 @@
          * @return Response
          */
         public function restoreStamina($userId) {
+            $settings = $this->getSettingList();
+
             /** @var $db PDO */
             $db = $this->getDataBase();
             $response = new Response();
+
+            $userBonus = UserSlotModel::getInstance()->getUserSlotByUserIdAndBonusType($userId, 'stamina_time');
+            if($userBonus->IsNotOk()) {
+                return $userBonus;
+            }
+            $userBonus = $userBonus->getData();
+
+            $userData = $this->getEntityByEntityId($userId);
+            if($userData->IsNotOk()) {
+                return $userData;
+            }
+            $userData = $userData->getData();
+
+            $staminaTimeBonus = 0;
+            foreach($userBonus as $bonusRow) {
+                $staminaTimeBonus = isset($bonusRow['bonus_value']) ? ($staminaTimeBonus + $bonusRow['bonus_value']) : $staminaTimeBonus;
+            }
+
+            $interval = time() - strtotime($userData['stamina_date']);
+            $staminaTime = $settings['stamina_time'] + $staminaTimeBonus * $settings['stamina_time']/100;
+            $newStamina = $userData['stamina'] + min(($userData['stamina_max'] - $userData['stamina']), floor($interval / $staminaTime));
+            $newStaminaTime = strtotime($userData['stamina_date']) + floor($interval / $staminaTime) * $staminaTime;
 
             $sql =
                 'UPDATE
                   ' . $this->_table . '
                 SET
-                  stamina = stamina + LEAST((TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV  stamina_time), stamina_max - stamina),
-                  stamina_date = DATE_ADD(stamina_date, INTERVAL (TIMESTAMPDIFF(SECOND, stamina_date, CURRENT_TIMESTAMP) DIV stamina_time) * stamina_time SECOND)
+                  stamina = :new_stamina,
+                  stamina_date = FROM_UNIXTIME(:new_stamina_date)
                 WHERE
                   id = :user_id';
             $query = $db->prepare($sql);
             $query->execute(array(
-                ':user_id'      => $userId
+                ':user_id'           => $userId,
+                ':new_stamina'       => $newStamina,
+                ':new_stamina_date'  => $newStaminaTime
             ));
 
             $err = $query->errorInfo();
@@ -546,7 +693,7 @@
 
             //получаем текущие данные пользователя
             $user = $this->getEntityByEntityId($userId);
-            if($user->isError()) {
+            if($user->IsNotOk()) {
                 return $user;
             }
             $user = $user->getData();
@@ -566,13 +713,13 @@
 
             //что мы должны дать пользователю за указанное количество дней
             $award = DailyAwardModel::getInstance()->getAwardByDay($day);
-            if($award->isError()) {
+            if($award->IsNotOk()) {
                 return $award;
             }
             $award = $award->getData();
 
             $awardResponse = $this->giveAward($userId, $award['award_id']);
-            if($awardResponse->isError()) {
+            if($awardResponse->IsNotOk()) {
                 return $awardResponse;
             }
 
@@ -636,9 +783,7 @@
                     create_date,
                     award_date,
                     energy_date,
-                    stamina_date,
-                    energy_time,
-                    stamina_time)
+                    stamina_date)
                 VALUES
                    (:user_id,
                     :face_id,
@@ -658,9 +803,7 @@
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
                     CURRENT_TIMESTAMP,
-                    CURRENT_TIMESTAMP,
-                    :energy_time,
-                    :stamina_time)';
+                    CURRENT_TIMESTAMP)';
             $query = $db->prepare($sql);
             $query->execute(array(
                 ':user_id'      => $userId,
@@ -673,9 +816,7 @@
                 ':stamina_max'  => $settings['stamina_max'],
                 ':coins'        => $settings['start_coins'],
                 ':chips'        => $settings['start_chips'],
-                ':bucks'        => $settings['start_bucks'],
-                ':energy_time'  => $settings['energy_time'],
-                ':stamina_time' => $settings['stamina_time']
+                ':bucks'        => $settings['start_bucks']
             ));
 
             $err = $query->errorInfo();
@@ -684,37 +825,37 @@
             }
 
             $response = UserSettingsModel::getInstance()->updateSettingsByUserId($userId, array('music' => 1, 'sfx' => 1, 'lang' => 'ru'));
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_body']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_head']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_hands']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_legs']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_shoes']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 
             $response = UserItemModel::getInstance()->addUserItem($userId, $settings['start_music']);
-            if($response->isError()) {
+            if($response->IsNotOk()) {
                 return $response;
             }
 

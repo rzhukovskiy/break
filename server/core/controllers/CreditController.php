@@ -34,7 +34,7 @@
 
                         $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
 
-                        if (!$offer->isError()) {
+                        if (!$offer->IsNotOk()) {
                             $offer = $offer->getData();
                             $response['response'] = array(
                                 'item_id' => $offerId,
@@ -57,7 +57,7 @@
 
                         $offer = OfferModel::getInstance()->getEntityByEntityId($offerId);
 
-                        if (!$offer->isError()) {
+                        if (!$offer->IsNotOk()) {
                             $offer = $offer->getData();
                             $response['response'] = array(
                                 'item_id' => $offerId,
@@ -83,7 +83,7 @@
                             $app_order_id = 1; // Получающийся у вас идентификатор заказа.
 
                             $offerResult = UserModel::getInstance()->giveOffer($input['receiver_id'], $input['item_id'], $input['item_price']);
-                            if($offerResult->isError()) {
+                            if($offerResult->IsNotOk()) {
                                 $response['error'] = array(
                                     'error_code' => 21,
                                     'error_msg' => 'Неверная цена.',
@@ -114,7 +114,7 @@
 
                             $offerResult = UserModel::getInstance()->giveOffer($input['receiver_id'], $input['item_id'], $input['item_price']);
 
-                            if($offerResult->isError()) {
+                            if($offerResult->IsNotOk()) {
                                 $response['error'] = array(
                                     'error_code' => 21,
                                     'error_msg' => 'Неверная цена.',

@@ -1,14 +1,14 @@
 <?php
     /**
-     * работа с user_scores таблицей. очки в мини-играх
+     * работа с user_experience таблицей. опыт в батлах
      */
-    class UserScoresModel extends BaseModel {
+    class UserExperienceModel extends BaseModel {
         protected $_table = 'user_scores';
 
         /**
          * Создать самого себя
          *
-         * @return UserScoresModel
+         * @return UserExperienceModel
          */
         public static function getInstance() {
             return parent::getInstance();

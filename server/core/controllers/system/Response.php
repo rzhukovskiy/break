@@ -5,6 +5,7 @@
     class Response {
         const CODE_OK           = 1; //все ок
         const CODE_NOT_AUTH     = 2; //пользователь не авторизован
+        const REQUEST_TIMEOUT   = 21; //превышено время выполнения запроса
         const CODE_WRONG_DATA   = 3; //неверные данные (запрос отработал без ошибок, но не изменил бд, так как не выполнилось какое-то условие)
         const CODE_ERROR        = 4; //запрос вызвал ошибку
         const CODE_EMPTY        = 5; //запрос не вызвал ошибку, но не отработал
@@ -57,7 +58,7 @@
          * Является ли ошибочным. Ошибочный - любой не ок
          * @return bool
          */
-        public function isError() {
+        public function IsNotOk() {
             return $this->_responseCode != self::CODE_OK;
         }
 
@@ -74,8 +75,8 @@
          */
         public function send() {
             $response = array();
-            $response['server_time']    = time();
-            $response['server_date']    = date('Y-m-d H:i:s');
+            $response['server_date']    = date('Y-m-d H:i:s P', time());
+            $response['server_time']    = strtotime($response['server_date']);
             $response['response_code']  = $this->_responseCode;
             $response['data']           = $this->_data;
             $response['error']          = $this->_error;
