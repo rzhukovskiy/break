@@ -3,6 +3,8 @@
      * Контроллер для работы с голосами вк
      */
     class CreditController extends BaseController {
+        /** @var bool */
+        protected $_withoutChecking = true;
         /**
          * Сюда приходит колбэк от вк
          * @return bool
@@ -18,7 +20,6 @@
             foreach ($input as $k => $v) {
                 $str .= $k.'='.$v;
             }
-
             if ($sig != md5($str . $vkConfig['api_secret'])) {
                 $response['error'] = array(
                     'error_code' => 10,
