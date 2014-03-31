@@ -98,13 +98,6 @@
         }
 
         /**
-         * Получение сообщений
-         */
-        public function deleteLogListAction() {
-            UserLogModel::getInstance()->deleteUserLogList()->send();
-        }
-
-        /**
          * Сохранение события пользователя
          */
         public function saveEventAction() {
@@ -183,6 +176,17 @@
             $bucks = $this->getRequest()->getParam('bucks', 0);
 
             UserModel::getInstance()->sellBucks($this->getUserId(), $bucks);
+
+            UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
+        }
+
+        /**
+         * Обмен баксов
+         */
+        public function buyChipsAction() {
+            $bucks = $this->getRequest()->getParam('bucks', 0);
+
+            UserModel::getInstance()->buyChips($this->getUserId(), $bucks);
 
             UserModel::getInstance()->getEntityByEntityId($this->getUserId())->send();
         }

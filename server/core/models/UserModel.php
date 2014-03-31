@@ -464,6 +464,20 @@
         }
 
         /**
+         * Меняем валюту
+         * @param int $userId
+         * @param int $bucks
+         * @return Response
+         */
+        public function buyChips($userId, $bucks) {
+            $settings = $this->getSettingList();
+
+            return $this->updateUserByUserId($userId, array(
+                'bucks' => -1 * $bucks,
+                'chips' => $bucks / $settings['bucks_to_chips']));
+        }
+
+        /**
          * Удалить указанного пользователя
          * @param int $userId
          * @return Response

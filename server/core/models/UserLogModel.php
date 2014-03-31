@@ -34,9 +34,11 @@
             $err = $query->errorInfo();
             if($err[1] != null){
                 $response->setCode(Response::CODE_ERROR)->setError($err[2]);
-            } else {
-                $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
             }
+            $response->setData($query->fetchAll(PDO::FETCH_ASSOC));
+
+            $this->deleteUserLogList();
+
             return $response;
         }
 
