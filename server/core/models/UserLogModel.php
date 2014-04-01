@@ -55,7 +55,7 @@
                 'DELETE FROM
                     ' . $this->_table . '
                  WHERE
-                     create_date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY)';
+                     create_date < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY)';
             $query = $dataDb->prepare($sql);
             $query->execute();
 
