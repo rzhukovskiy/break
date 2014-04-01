@@ -87,7 +87,7 @@
             $message = $this->getRequest()->getParam('message', false);
             $nickname = $this->getRequest()->getParam('nickname', 0);
 
-            UserLogModel::getInstance()->saveUserLog($this->getUserId(), $message, $nickname)->send();
+            UserLogModel::getInstance()->saveUserLog($this->getUserId(), $nickname, $message)->send();
         }
 
         /**
