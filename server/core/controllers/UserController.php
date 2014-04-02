@@ -104,15 +104,18 @@
             $eventType = $this->getRequest()->getParam('game_id', false);
             $objectId = $this->getRequest()->getParam('object_id', 0);
             $userId = $this->getRequest()->getParam('user_id', $this->getUserId());
+            $sender = $this->getRequest()->getParam('sender', 0);
 
-            UserEventModel::getInstance()->saveUserEvent($userId, $eventType, $objectId)->send();
+            UserEventModel::getInstance()->saveUserEvent($userId, $eventType, $objectId, $sender)->send();
         }
 
         /**
          * Получение событий пользователя
          */
         public function getEventListAction() {
-            UserEventModel::getInstance()->getUserEventListByUserId($this->getUserId())->send();
+            $userId = $this->getRequest()->getParam('user_id', $this->getUserId());
+
+            UserEventModel::getInstance()->getUserEventListByUserId($userId)->send();
         }
 
         /**

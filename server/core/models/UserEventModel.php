@@ -78,11 +78,12 @@
         /**
          * Сохранить очки
          * @param int $userId
+         * @param int $sender
          * @param string $eventType
          * @param string $objectId
          * @return Response
          */
-        public function saveUserEvent($userId, $eventType, $objectId) {
+        public function saveUserEvent($userId, $eventType, $objectId = '', $sender = 0) {
             /** @var $dataDb PDO */
             $dataDb = $this->getDataBase();
             $response = new Response();
@@ -90,14 +91,15 @@
             $sql =
                 'INSERT INTO
                     ' . $this->_table . '
-                    (user_id, event_type, object_id, create_date)
+                    (user_id, event_type, object_id, sender, create_date)
                 VALUES
-                    (:user_id, :event_type, :object_id, CURRENT_TIMESTAMP)';
+                    (:user_id, :event_type, :object_id, :sender, CURRENT_TIMESTAMP)';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'         => $userId,
                 ':event_type'      => $eventType,
-                ':object_id'       => $objectId
+                ':object_id'       => $objectId,
+                ':sender'          => $sender
             ));
 
             $err = $query->errorInfo();
