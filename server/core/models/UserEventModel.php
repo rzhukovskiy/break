@@ -30,7 +30,8 @@
                 FROM
                     ' . $this->_table . '
                 WHERE
-                    user_id = :user_id';
+                    user_id = :user_id AND
+                    create_date > DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY)';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId
@@ -61,7 +62,8 @@
                 SET
                     checked = 1
                 WHERE
-                    user_id = :user_id';
+                    user_id = :user_id AND
+                    checked = 0';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id' => $userId

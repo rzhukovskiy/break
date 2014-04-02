@@ -63,6 +63,7 @@
                     'user_scores_list'          => UserScoresModel::getInstance()->getUserScoresListByUserId($id)->getData(), //очки
                     'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($id)->getData(), //предметы
                     'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($id)->getData(), //слоты
+                    'user_event_list'           => UserEventModel::getInstance()->getUserEventListByUserId($id)->getData(), //ивенты
                 );
             }
 
