@@ -38,6 +38,7 @@
                 'user_tutorial_list'        => UserTutorialModel::getInstance()->getUserTutorialListByUserId($this->getUserId())->getData(), //туториал
                 'user_collections_list'     => UserCollectionsModel::getInstance()->getUserCollectionsListByUserId($this->getUserId())->getData(), //коллекции
                 'user_mission_list'         => UserMissionModel::getInstance()->getUserMissionListByUserId($this->getUserId())->getData(), //миссии
+                'user_achievement_list'     => UserAchievementModel::getInstance()->getUserAchievementListByUserId($this->getUserId())->getData(), //ачивки
                 'user_award_list'           => UserAwardModel::getInstance()->getUserAwardListByUserId($this->getUserId())->getData(), //награды
                 'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($this->getUserId())->getData(), //предметы
                 'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
@@ -363,6 +364,22 @@
                 $res->setData(array(
                     'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
                     'user_consumables_list'     => UserConsumablesModel::getInstance()->getUserConsumablesListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
+        }
+
+        /**
+         * Покупка предмета
+         */
+        public function incrementAchievementAction() {
+            $res = UserAchievementModel::getInstance()->incrementUserAchievement($this->getUserId(), $this->getRequest()->getParam('achievement_id', false));
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_achievement_list'     => UserAchievementModel::getInstance()->getUserAchievementListByUserId($this->getUserId())->getData(), //предметы
                 ))->send();
             }
         }
