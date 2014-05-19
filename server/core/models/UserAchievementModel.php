@@ -81,7 +81,7 @@
         }
 
         /**
-         * Потренить движение
+         * Инкрементим прогресс ачивки
          * @param int $userId
          * @param string $achievementId
          * @return Response
@@ -131,6 +131,69 @@
                 ':user_id'          => $userId,
                 ':achievement_id'   => $achievementId,
                 ':phase'            => $phase
+            ));
+
+            $err = $query->errorInfo();
+            if($err[1] != null){
+                $response->setCode(Response::CODE_ERROR)->setError($err[2]);
+            }
+
+            return $response;
+        }
+
+        /**
+         * Инкрементим прогресс ачивки
+         * @param int $userId
+         * @param string $achievementId
+         * @param int $value
+         * @return Response
+         */
+        public function setUserAchievement($userId, $achievementId, $value = 1) {
+            /** @var $dataDb PDO */
+            $response = new Response();
+
+            $achievement = AchievementModel::getInstance()->getEntityByEntityId($achievementId);
+            if($achievement->IsNotOk()) {
+                return $achievement;
+            }
+            $achievement = $achievement->getData();
+
+            $userAchievement = $this->getUserAchievementByUserIdAndAchievementId($userId, $achievementId);
+            if($userAchievement->IsNotOk()) {
+                return $userAchievement;
+            }
+            $userAchievement = $userAchievement->getData();
+
+            $phase = $userAchievement['phase'];
+
+            if(!isset($achievement['phase' . $phase]) || !$achievement['phase' . $phase]) {
+                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Achievement completed already');
+            }
+
+            if($value >= $achievement['phase' . $phase]) {
+                $phase++;
+                $awardResult = UserModel::getInstance()->giveAward($userId, $achievement['award' . $phase . '_id']);
+
+                if($awardResult->IsNotOk()) {
+                    return $awardResult;
+                }
+            }
+
+            $sql =
+                'INSERT INTO
+                    ' . $this->_table . '
+                    (user_id, achievement_id, points, phase, create_date)
+                VALUES
+                    (:user_id, :achievement_id, :points, :value, CURRENT_TIMESTAMP)
+                ON DUPLICATE KEY UPDATE
+                    points = value,
+                    phase = :phase';
+            $query = $dataDb->prepare($sql);
+            $query->execute(array(
+                ':user_id'          => $userId,
+                ':achievement_id'   => $achievementId,
+                ':phase'            => $phase,
+                ':value'            => $value
             ));
 
             $err = $query->errorInfo();

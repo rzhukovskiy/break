@@ -369,10 +369,33 @@
         }
 
         /**
-         * Покупка предмета
+         * Инкремент ачивки
          */
         public function incrementAchievementAction() {
-            $res = UserAchievementModel::getInstance()->incrementUserAchievement($this->getUserId(), $this->getRequest()->getParam('achievement_id', false));
+            $userId         = $this->getRequest()->getParam('user_id', $this->getUserId());
+            $achievementId  = $this->getRequest()->getParam('achievement_id', false);
+
+            $res = UserAchievementModel::getInstance()->incrementUserAchievement($userId, $achievementId);
+
+            if($res->IsNotOk()) {
+                $res->send();
+            } else {
+                $res->setData(array(
+                    'user'                      => UserModel::getInstance()->getEntityByEntityId($this->getUserId())->getData(), //пользователь
+                    'user_achievement_list'     => UserAchievementModel::getInstance()->getUserAchievementListByUserId($this->getUserId())->getData(), //предметы
+                ))->send();
+            }
+        }
+
+        /**
+         * Установка ачивки
+         */
+        public function setAchievementAction() {
+            $userId         = $this->getRequest()->getParam('user_id', $this->getUserId());
+            $achievementId  = $this->getRequest()->getParam('achievement_id', false);
+            $value          = $this->getRequest()->getParam('value', false);
+
+            $res = UserAchievementModel::getInstance()->setUserAchievement($userId, $achievementId, $value);
 
             if($res->IsNotOk()) {
                 $res->send();

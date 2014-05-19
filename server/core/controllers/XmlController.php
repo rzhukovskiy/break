@@ -61,6 +61,7 @@
 
                         $tableData['table_fields']['coins_' . $level] = 'int';
                         $tableData['table_fields']['energy_' . $level] = 'int';
+                        $tableData['table_fields']['bucks_' . $level] = 'int';
                         $tableData['table_fields']['mastery_points_' . $level] = 'int';
                         $tableData['table_fields']['award_id_' . $level] = 'string';
                         $tableRow['coins_' . $level] = $coins;
