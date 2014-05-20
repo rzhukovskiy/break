@@ -88,6 +88,7 @@
          */
         public function incrementUserAchievement($userId, $achievementId) {
             /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
             $response = new Response();
 
             $achievement = AchievementModel::getInstance()->getEntityByEntityId($achievementId);
@@ -122,7 +123,7 @@
                     ' . $this->_table . '
                     (user_id, achievement_id, points, phase, create_date)
                 VALUES
-                    (:user_id, :achievement_id, :points, 1, CURRENT_TIMESTAMP)
+                    (:user_id, :achievement_id, 1, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
                     points = points + 1,
                     phase = :phase';
@@ -150,6 +151,7 @@
          */
         public function setUserAchievement($userId, $achievementId, $value = 1) {
             /** @var $dataDb PDO */
+            $dataDb = $this->getDataBase();
             $response = new Response();
 
             $achievement = AchievementModel::getInstance()->getEntityByEntityId($achievementId);
@@ -164,7 +166,7 @@
             }
             $userAchievement = $userAchievement->getData();
 
-            $phase = $userAchievement['phase'];
+            $phase = isset($userAchievement['phase']) ? $userAchievement['phase'] : 1;
 
             if(!isset($achievement['phase' . $phase]) || !$achievement['phase' . $phase]) {
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Achievement completed already');
@@ -184,16 +186,16 @@
                     ' . $this->_table . '
                     (user_id, achievement_id, points, phase, create_date)
                 VALUES
-                    (:user_id, :achievement_id, :points, :value, CURRENT_TIMESTAMP)
+                    (:user_id, :achievement_id, :value, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
-                    points = value,
+                    points = :value,
                     phase = :phase';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,
                 ':achievement_id'   => $achievementId,
-                ':phase'            => $phase,
-                ':value'            => $value
+                ':value'            => $value,
+                ':phase'            => $phase
             ));
 
             $err = $query->errorInfo();
