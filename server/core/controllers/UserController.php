@@ -228,7 +228,7 @@
         }
 
         /**
-         * Добавление нового пользователя
+         * Сохранение настроек
          */
         public function saveSettingsAction() {
             $music = $this->getRequest()->getParam('music', 1);
@@ -308,7 +308,7 @@
         }
 
         /**
-         * Уменьшение усталости
+         * Уменьшение фишек
          */
         public function takeChipsAction() {
             $data = array(
@@ -353,7 +353,7 @@
         }
 
         /**
-         * Покупка предмета
+         * Покупка используемых предметов
          */
         public function buyConsumablesAction() {
             $res = UserConsumablesModel::getInstance()->buyUserConsumables($this->getUserId(), $this->getRequest()->getParam('consumables_id', false), $this->getRequest()->getParam('count', 1));

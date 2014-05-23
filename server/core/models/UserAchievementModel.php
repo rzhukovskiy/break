@@ -103,10 +103,10 @@
             }
             $userAchievement = $userAchievement->getData();
 
-            $phase = $userAchievement['phase'];
+            $phase = isset($userAchievement['phase']) ? $userAchievement['phase'] : 1;
 
             if(!isset($achievement['phase' . $phase]) || !$achievement['phase' . $phase]) {
-                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Wrong phase');
+                return $response->setCode(Response::CODE_WRONG_DATA)->setError('Achievement completed already');
             }
 
             if(($userAchievement['points'] + 1) == $achievement['phase' . $phase]) {
