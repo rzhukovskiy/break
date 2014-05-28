@@ -65,6 +65,7 @@
                     'user_item_list'            => UserItemModel::getInstance()->getUserItemListByUserId($id)->getData(), //предметы
                     'user_slot_list'            => UserSlotModel::getInstance()->getUserSlotListByUserId($id)->getData(), //слоты
                     'user_event_list'           => UserEventModel::getInstance()->getUserEventListByUserId($id)->getData(), //ивенты
+                    'user_achievement_list'     => UserAchievementModel::getInstance()->getUserAchievementListByUserId($id)->getData(), //ачивки
                 );
             }
 

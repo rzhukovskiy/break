@@ -109,7 +109,7 @@
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Achievement completed already');
             }
 
-            if(($userAchievement['points'] + 1) == $achievement['phase' . $phase]) {
+            if(($userAchievement['points'] + 1) >= $achievement['phase' . $phase]) {
                 $phase++;
                 $awardResult = UserModel::getInstance()->giveAward($userId, $achievement['award' . $phase . '_id']);
 
