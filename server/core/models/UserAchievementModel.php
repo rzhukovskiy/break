@@ -104,12 +104,13 @@
             $userAchievement = $userAchievement->getData();
 
             $phase = isset($userAchievement['phase']) ? $userAchievement['phase'] : 1;
+            $points = isset($userAchievement['points']) ? $userAchievement['points'] : 0;
 
             if(!isset($achievement['phase' . $phase]) || !$achievement['phase' . $phase]) {
                 return $response->setCode(Response::CODE_WRONG_DATA)->setError('Achievement completed already');
             }
 
-            if(($userAchievement['points'] + 1) >= $achievement['phase' . $phase]) {
+            if(($points + 1) >= $achievement['phase' . $phase]) {
                 $phase++;
                 $awardResult = UserModel::getInstance()->giveAward($userId, $achievement['award' . $phase . '_id']);
 
@@ -123,7 +124,7 @@
                     ' . $this->_table . '
                     (user_id, achievement_id, points, phase, create_date)
                 VALUES
-                    (:user_id, :achievement_id, 1, 1, CURRENT_TIMESTAMP)
+                    (:user_id, :achievement_id, 1, :phase, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
                     points = points + 1,
                     phase = :phase';
@@ -189,7 +190,8 @@
                     (:user_id, :achievement_id, :value, 1, CURRENT_TIMESTAMP)
                 ON DUPLICATE KEY UPDATE
                     points = :value,
-                    phase = :phase';
+                    phase = :phase,
+                    modify_date = CURRENT_TIMESTAMP';
             $query = $dataDb->prepare($sql);
             $query->execute(array(
                 ':user_id'          => $userId,
